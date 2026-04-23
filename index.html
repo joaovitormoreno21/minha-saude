@@ -299,6 +299,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ai-status{font-size:13px;color:var(--text2);text-align:center;padding:16px 0;display:none;}
 .ai-error{font-size:13px;color:var(--red);text-align:center;padding:8px 0;display:none;}
 
+/* ── BACKUP ── */
+.backup-row{display:flex;gap:8px;margin-bottom:12px;}
+.backup-btn{flex:1;padding:11px 8px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;border:0.5px solid var(--border2);}
+.backup-btn svg{width:15px;height:15px;stroke:currentColor;flex-shrink:0;}
+.backup-export{background:rgba(45,212,160,0.1);color:var(--accent2);border-color:rgba(45,212,160,0.3);}
+.backup-import{background:rgba(79,127,255,0.1);color:#7da8ff;border-color:rgba(79,127,255,0.3);}
+.backup-toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--text);z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;}
+.backup-toast.show{opacity:1;}
+
 /* FINALIZE BTN */
 .finalize-btn{width:100%;margin-top:10px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
 </style>
@@ -316,6 +325,17 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
     <!-- ══ HOME ══ -->
     <div class="screen on" id="sc-home">
+      <div class="backup-row">
+        <button class="backup-btn backup-export" onclick="exportBackup()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar backup
+        </button>
+        <button class="backup-btn backup-import" onclick="document.getElementById('import-input').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Importar backup
+        </button>
+        <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importBackup(event)">
+      </div>
       <div class="home-metrics">
         <div class="metric-card">
           <div class="metric-label">Peso atual</div>
@@ -1297,7 +1317,8 @@ function finalizarTreino(){
   workoutHistory.sort((a,b)=> new Date(b.selectedDateKey.split('-').reverse().join('-')) - new Date(a.selectedDateKey.split('-').reverse().join('-')) || b.id-a.id);
   workoutHistory = dedupeWorkoutHistory(workoutHistory);
   sv('workoutHistory',workoutHistory);
-  alert('Treino salvo! 💪');
+  exportBackup(true);
+  showToast('💪 Treino salvo! Backup gerado automaticamente.');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1692,6 +1713,90 @@ function confirmAiFood(){
   document.getElementById('ai-food-modal').classList.remove('open');
   renderMealSections();
   aiPendingFoods=[];
+}
+
+// ═══════════════════════════════════════════════════════════
+// BACKUP — EXPORTAR / IMPORTAR
+// ═══════════════════════════════════════════════════════════
+function getAllBackupData(){
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    workoutHistory,
+    weightLog,
+    foodLog: (()=>{
+      const all={};
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('foodLog_')) all[k]=JSON.parse(localStorage.getItem(k)||'{}');
+      }
+      return all;
+    })(),
+    customExercises,
+    hiddenExercises,
+  };
+}
+
+function exportBackup(silent=false){
+  try{
+    const data = getAllBackupData();
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.download = `minha-saude-backup.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    if(!silent) showToast('✅ Backup exportado com sucesso!');
+  } catch(e){
+    showToast('⚠️ Erro ao exportar backup');
+  }
+}
+
+function importBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.version || !data.workoutHistory) throw new Error('Arquivo inválido');
+      if(!confirm(`Importar backup de ${new Date(data.exportedAt).toLocaleDateString('pt-BR')}?\n\nIsso vai substituir seus dados atuais.`)) return;
+      if(data.workoutHistory) sv('workoutHistory', data.workoutHistory);
+      if(data.weightLog) sv('weightLog', data.weightLog);
+      if(data.customExercises) sv('customExercises', JSON.stringify(data.customExercises));
+      if(data.hiddenExercises) sv('hiddenExercises', JSON.stringify(data.hiddenExercises));
+      if(data.foodLog){
+        Object.entries(data.foodLog).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
+      }
+      // Reload state
+      workoutHistory = ld('workoutHistory',[]);
+      weightLog = ld('weightLog',[]);
+      customExercises = ld('customExercises',{});
+      hiddenExercises = ld('hiddenExercises',{});
+      renderHome();
+      renderSessions();
+      showToast('✅ Backup importado com sucesso!');
+    } catch(err){
+      showToast('⚠️ Arquivo de backup inválido');
+    }
+    event.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function showToast(msg, duration=3000){
+  let toast = document.getElementById('backup-toast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'backup-toast';
+    toast.className = 'backup-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=> toast.classList.remove('show'), duration);
 }
 
 // ═══════════════════════════════════════════════════════════

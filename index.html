@@ -1250,7 +1250,13 @@ function togglePanel(k,defaultN){
 }
 
 function addSerie(k){
-  if(!exSeries[k]) exSeries[k]=[];
+  // Salva o que está digitado antes de adicionar nova linha
+  const cur=exSeries[k]||[];
+  exSeries[k]=cur.map((_,i)=>({
+    peso:document.getElementById('p-'+k+'-'+i)?.value||_.peso||'',
+    reps:document.getElementById('r-'+k+'-'+i)?.value||_.reps||'',
+    obs:document.getElementById('obs-'+k)?.value||_.obs||''
+  }));
   exSeries[k].push({peso:'',reps:'',obs:''});
   sv('exSeries_'+selectedDateKey,exSeries);
   renderTbody(k);
@@ -1258,6 +1264,13 @@ function addSerie(k){
 
 function delSerie(k,i){
   if((exSeries[k]||[]).length<=1) return;
+  // Salva o que está digitado antes de remover linha
+  const cur=exSeries[k]||[];
+  exSeries[k]=cur.map((_,j)=>({
+    peso:document.getElementById('p-'+k+'-'+j)?.value||_.peso||'',
+    reps:document.getElementById('r-'+k+'-'+j)?.value||_.reps||'',
+    obs:document.getElementById('obs-'+k)?.value||_.obs||''
+  }));
   exSeries[k].splice(i,1);
   sv('exSeries_'+selectedDateKey,exSeries);
   renderTbody(k);

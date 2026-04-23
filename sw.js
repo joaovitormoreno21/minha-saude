@@ -1,4 +1,4 @@
-const CACHE = 'minha-saude-v2';
+const CACHE = 'minha-saude-v3';
 const FILES = ['/minha-saude/', '/minha-saude/index.html', '/minha-saude/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -14,6 +14,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Deixa requisições externas (API, fonts, etc) passarem direto sem interceptar
+  if (!e.request.url.startsWith(self.location.origin)) return;
+
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))
   );

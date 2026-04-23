@@ -214,6 +214,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .view-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all 0.15s;}
 .view-tab.on{background:var(--bg4);color:var(--text);border-color:var(--border3);}
 
+
+
+/* HOME */
+.home-hero{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:0.5px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+.home-kicker{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.home-title{font-size:22px;font-weight:600;letter-spacing:-0.3px;margin-bottom:4px;}
+.home-sub{font-size:13px;color:var(--text2);}
+.today-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:15px;margin-bottom:12px;}
+.today-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.today-name{font-size:16px;font-weight:600;margin-bottom:4px;}
+.today-desc{font-size:12px;color:var(--text2);line-height:1.4;}
+.today-status{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(79,127,255,0.14);color:#7da8ff;white-space:nowrap;}
+.today-status.done{background:rgba(45,212,160,0.12);color:var(--accent2);}
+.home-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.quick-btn{padding:11px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);}
+.week-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.week-day{background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;padding:10px 6px;text-align:center;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;}
+.week-day.today{border-color:var(--accent);box-shadow:0 0 0 1px rgba(79,127,255,0.25) inset;}
+.week-day.done{background:rgba(45,212,160,0.08);}
+.week-wk{font-size:10px;color:var(--text3);text-transform:uppercase;}
+.week-num{font-size:15px;font-weight:600;}
+.week-check{font-size:16px;line-height:1;}
+.week-train{font-size:10px;color:var(--text2);line-height:1.25;}
+.home-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+.metric-value{font-size:22px;font-weight:600;font-family:var(--mono);}
+.metric-sub{font-size:12px;color:var(--text2);margin-top:4px;}
+
 /* FINALIZE BTN */
 .finalize-btn{width:100%;margin-top:10px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
 </style>
@@ -229,8 +259,50 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
   <div class="content">
 
+    <!-- ══ HOME ══ -->
+    <div class="screen on" id="sc-home">
+      <div class="home-hero">
+        <div class="home-kicker">Painel inicial</div>
+        <div class="home-title" id="home-title">Bem-vindo</div>
+        <div class="home-sub" id="home-sub">Sua semana de treinos e progresso rápido.</div>
+      </div>
+
+      <div class="today-card">
+        <div class="today-top">
+          <div>
+            <div class="home-kicker">Programação do dia</div>
+            <div class="today-name" id="today-plan-name">—</div>
+            <div class="today-desc" id="today-plan-desc">—</div>
+          </div>
+          <div class="today-status" id="today-plan-status">Hoje</div>
+        </div>
+        <div class="home-actions">
+          <button class="btn-primary" onclick="openTodayWorkout()">Ir para treino</button>
+          <button class="quick-btn" onclick="updateCurrentWeight()">Atualizar peso</button>
+        </div>
+      </div>
+
+      <div class="week-card">
+        <div class="stit" style="margin-top:0;">Calendário semanal</div>
+        <div class="week-grid" id="home-week-grid"></div>
+      </div>
+
+      <div class="home-metrics">
+        <div class="metric-card">
+          <div class="metric-label">Peso atual</div>
+          <div class="metric-value" id="home-weight">—</div>
+          <div class="metric-sub" id="home-weight-sub">Sem registro</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Treinos na semana</div>
+          <div class="metric-value" id="home-week-count">0</div>
+          <div class="metric-sub" id="home-week-count-sub">0 concluídos</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ TREINO ══ -->
-    <div class="screen on" id="sc-treino">
+    <div class="screen" id="sc-treino">
       <div class="sel-wrap">
         <div class="sel-lbl">Linha do tempo do treino</div>
         <div class="timeline-head">
@@ -300,7 +372,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 
   <nav class="nav">
-    <button class="nb on" onclick="showScreen('treino',this)">
+    <button class="nb on" onclick="showScreen('home',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10.5V20h14v-9.5"/></svg>
+      Início
+    </button>
+    <button class="nb" onclick="showScreen('treino',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6.5 6.5h11M6.5 17.5h11M4 12h16"/><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/></svg>
       Treino
     </button>
@@ -518,6 +594,10 @@ const DEFAULT_DATE_KEY = dateKeyFromDate(isDateInTimeline(realToday) ? realToday
 let selectedDateKey = DEFAULT_DATE_KEY;
 sv('selectedDateKey', selectedDateKey);
 
+const WEEKLY_PLAN_DEFAULT = {1:'UPPER_A',2:'LOWER_A',3:'DESCANSO',4:'CARDIO',5:'UPPER_B',6:'LOWER_B',0:'TREINO_LIVRE'};
+let weeklyPlan = ld('weeklyPlan', WEEKLY_PLAN_DEFAULT);
+let weightLog = ld('weightLog', []);
+
 let activeTreino = 'UPPER_A';
 let exChecked = {};
 let exSeries = {};     // key -> [{peso,reps,obs}]
@@ -603,6 +683,100 @@ function loadDayState(dateKey){
 loadDayState(selectedDateKey);
 normalizeExerciseLibrary();
 migrateCustomExercisesToLibrary();
+
+function getPlanCodeForDate(date){return weeklyPlan[date.getDay()]||'DESCANSO';}
+function getPlanLabel(code){return code==='DESCANSO' ? 'Descanso' : (TREINOS[code]?.label || 'Treino livre');}
+function getPlanDescription(code){
+  if(code==='DESCANSO') return 'Dia de recuperação e foco em sono, alimentação e hidratação.';
+  return TREINOS[code]?.obj || 'Treino personalizado do dia.';
+}
+function getStartOfWeek(date){
+  const d=new Date(date);
+  const day=(d.getDay()+6)%7; // monday=0
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate()-day);
+  return d;
+}
+function getLatestWeight(){
+  if(!Array.isArray(weightLog) || !weightLog.length) return null;
+  return [...weightLog].sort((a,b)=> new Date(b.date)-new Date(a.date))[0];
+}
+function getSessionsForWeek(startDate){
+  const end=new Date(startDate); end.setDate(end.getDate()+6);
+  return workoutHistory.filter(s=>{
+    const d=parseDateKey(s.selectedDateKey||s.date.replace(/\//g,'-'));
+    return d>=startDate && d<=end;
+  });
+}
+function isWorkoutDoneForDate(date, code){
+  const key=dateKeyFromDate(date);
+  if(code==='DESCANSO') return false;
+  return workoutHistory.some(s => (s.selectedDateKey===key || s.date===key.replace(/-/g,'/')) && s.treino===code);
+}
+function openTodayWorkout(){
+  const today=isDateInTimeline(realToday) ? new Date(realToday) : TIMELINE_START;
+  const key=dateKeyFromDate(today);
+  selectTimelineDate(key);
+  const code=getPlanCodeForDate(today);
+  if(code!=='DESCANSO' && TREINOS[code]) selTreino(code);
+  const btn=[...document.querySelectorAll('.nb')].find(b=>b.textContent.includes('Treino'));
+  if(btn) showScreen('treino', btn);
+}
+function updateCurrentWeight(){
+  const latest=getLatestWeight();
+  const current=latest?.weight || '';
+  const value=prompt('Digite seu peso atual em kg:', current);
+  if(value===null) return;
+  const num=parseFloat(String(value).replace(',','.'));
+  if(!num || num<=0) { alert('Digite um peso válido.'); return; }
+  const todayKey=dateKeyFromDate(realToday);
+  weightLog = Array.isArray(weightLog) ? weightLog.filter(w=>w.date!==todayKey) : [];
+  weightLog.push({date:todayKey, weight:num});
+  sv('weightLog', weightLog);
+  renderHome();
+}
+function renderHome(){
+  const now=isDateInTimeline(realToday) ? new Date(realToday) : TIMELINE_START;
+  const todayCode=getPlanCodeForDate(now);
+  const todayDone=isWorkoutDoneForDate(now, todayCode);
+  document.getElementById('home-title').textContent=`${document.getElementById('greet').textContent.replace(/[☀️🌤️🌙]/g,'').trim()}, João`;
+  document.getElementById('home-sub').textContent=`${formatTimelineHeader(now)} · acompanhe sua semana.`;
+  document.getElementById('today-plan-name').textContent=getPlanLabel(todayCode);
+  document.getElementById('today-plan-desc').textContent=getPlanDescription(todayCode);
+  const status=document.getElementById('today-plan-status');
+  status.textContent=todayCode==='DESCANSO' ? 'Recuperação' : (todayDone ? 'Concluído' : 'Hoje');
+  status.classList.toggle('done', !!todayDone);
+
+  const weekStart=getStartOfWeek(now);
+  const grid=document.getElementById('home-week-grid');
+  let doneCount=0;
+  const sessions=getSessionsForWeek(weekStart);
+  const uniqueWeek = new Set(sessions.map(s=> `${s.selectedDateKey||s.date}-${s.treino}`));
+  doneCount = uniqueWeek.size;
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(weekStart); d.setDate(d.getDate()+i);
+    const code=getPlanCodeForDate(d);
+    const done=isWorkoutDoneForDate(d, code);
+    const isToday=dateKeyFromDate(d)===dateKeyFromDate(now);
+    const icon=done?'✔️':(isToday?'🔵':'⬜');
+    days.push(`<div class="week-day${done?' done':''}${isToday?' today':''}">
+      <div>
+        <div class="week-wk">${WEEKDAY_SHORT[d.getDay()]}</div>
+        <div class="week-num">${String(d.getDate()).padStart(2,'0')}</div>
+      </div>
+      <div class="week-check">${icon}</div>
+      <div class="week-train">${getPlanLabel(code)}</div>
+    </div>`);
+  }
+  grid.innerHTML=days.join('');
+
+  const latest=getLatestWeight();
+  document.getElementById('home-weight').textContent=latest ? `${String(latest.weight).replace('.',',')} kg` : '—';
+  document.getElementById('home-weight-sub').textContent=latest ? `Atualizado em ${latest.date.replace(/-/g,'/')}` : 'Toque para registrar';
+  document.getElementById('home-week-count').textContent=String(doneCount);
+  document.getElementById('home-week-count-sub').textContent=`${doneCount} treino(s) concluído(s)`;
+}
 
 // ═══════════════════════════════════════════════════════════
 // HEADER
@@ -1223,6 +1397,7 @@ function showScreen(id,btn){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('sc-'+id).classList.add('on');
   btn.classList.add('on');
+  if(id==='home') renderHome();
   if(id==='hist'){renderHistTabs();renderSessions();}
   if(id==='food') renderMealSections();
 }
@@ -1234,6 +1409,7 @@ normalizeExerciseLibrary();
 initHeader();
 renderSelector();
 renderExs();
+renderHome();
 </script>
 <script>if("serviceWorker"in navigator){navigator.serviceWorker.register("/minha-saude/sw.js");}</script>
 </body>

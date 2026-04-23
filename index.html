@@ -1682,7 +1682,7 @@ function stopMic(){
   document.getElementById('mic-btn').title='Falar';
 }
 
-
+function confirmAiFood(){
   if(!aiPendingFoods.length) return;
   aiPendingFoods.forEach(it=>{
     if(!foodLog[it.meal]) foodLog[it.meal]=[];

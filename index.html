@@ -527,6 +527,18 @@ let modalMeal = null;
 let selectedFood = null;
 let exerciseSearchResults = [];
 let customExercises = {};
+
+function dedupeWorkoutHistory(list){
+  const seen=new Set();
+  const out=[];
+  for(const s of list||[]){
+    const key=`${s.selectedDateKey||''}__${s.treino||''}`;
+    if(seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+  }
+  return out;
+}
 let hiddenExercises = {};
 let savedExerciseLibrary = ld('savedExerciseLibrary', []);
 
@@ -972,14 +984,11 @@ function finalizarTreino(){
     treino:activeTreino,label:TREINOS[activeTreino].label,exercicios
   };
 
-  const existingIndex=workoutHistory.findIndex(s=>s.selectedDateKey===selectedDateKey && s.treino===activeTreino);
-  if(existingIndex>=0){
-    workoutHistory[existingIndex]=newEntry;
-  } else {
-    workoutHistory.unshift(newEntry);
-  }
+  workoutHistory = workoutHistory.filter(s=>!(s.selectedDateKey===selectedDateKey && s.treino===activeTreino));
+  workoutHistory.unshift(newEntry);
 
   workoutHistory.sort((a,b)=> new Date(b.selectedDateKey.split('-').reverse().join('-')) - new Date(a.selectedDateKey.split('-').reverse().join('-')) || b.id-a.id);
+  workoutHistory = dedupeWorkoutHistory(workoutHistory);
   sv('workoutHistory',workoutHistory);
   alert('Treino salvo! 💪');
 }
@@ -1010,7 +1019,8 @@ function filterHist(f,btn){
 
 function renderSessions(){
   const el=document.getElementById('session-list');
-  let sessions=histFilter==='ALL'?workoutHistory:workoutHistory.filter(s=>s.treino===histFilter);
+  let sessions=dedupeWorkoutHistory(workoutHistory);
+  sessions=histFilter==='ALL'?sessions:sessions.filter(s=>s.treino===histFilter);
   if(!sessions.length){el.innerHTML='<p class="empty">Nenhum treino registrado ainda.</p>';return;}
   el.innerHTML=sessions.map(s=>`
     <div class="hsession">
@@ -1039,12 +1049,13 @@ function renderProgression(){
   const el=document.getElementById('prog-list');
   // Collect all exercises across history
   const exMap={};
-  [...workoutHistory].reverse().forEach(s=>{
+  [...dedupeWorkoutHistory(workoutHistory)].reverse().forEach(s=>{
     s.exercicios.forEach(e=>{
       if(!e.series?.length) return;
       if(!exMap[e.name]) exMap[e.name]=[];
       const best=e.series.reduce((b,sr)=>parseFloat(sr.peso||0)>=parseFloat(b.peso||0)?sr:b,e.series[0]);
-      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps});
+      const vol=e.series.reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0).toFixed(0);
+      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps,vol});
     });
   });
   if(!Object.keys(exMap).length){el.innerHTML='<p class="empty">Treine para ver sua progressão aqui.</p>';return;}
@@ -1053,7 +1064,7 @@ function renderProgression(){
       const isBest=i===0;
       return `<div class="prog-row">
         <span class="prog-date">${r.date}</span>
-        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}</span>
+        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'} ${r.vol>0?`· vol ${r.vol}`:''}</span>
       </div>`;
     }).join('');
     return `<div class="prog-ex-card"><div class="prog-ex-name">${name}</div>${rows}</div>`;

@@ -936,21 +936,50 @@ function saveSeries(k){
   openPanel=null; renderExs();
 }
 
+function persistOpenPanelInputs(k){
+  const key = k || openPanel;
+  if(!key) return;
+  const panel=document.getElementById('panel-'+key);
+  if(!panel) return;
+  const cur=exSeries[key]||[];
+  const obs=document.getElementById('obs-'+key)?.value||cur[0]?.obs||'';
+  exSeries[key]=cur.map((_,i)=>({
+    peso:document.getElementById('p-'+key+'-'+i)?.value||'',
+    reps:document.getElementById('r-'+key+'-'+i)?.value||'',
+    obs:i===0?obs:''
+  }));
+  sv('exSeries_'+selectedDateKey,exSeries);
+}
+
 function toggleEx(k){
-  exChecked[k]=!exChecked[k]; sv('exChecked_'+selectedDateKey,exChecked); renderExs();
+  persistOpenPanelInputs();
+  exChecked[k]=!exChecked[k];
+  sv('exChecked_'+selectedDateKey,exChecked);
+  renderExs();
 }
 
 function finalizarTreino(){
+  persistOpenPanelInputs();
   const t=TREINOS[activeTreino];
   const exercicios=getCurrentExercises().map((e,i)=>{
     const k=e.id||`${activeTreino}_${i}`;
-    return {name:e.name,feito:!!exChecked[k],series:exSeries[k]||[],isCustom:!!e.isCustom};
+    return {name:e.name,feito:!!exChecked[k],series:(exSeries[k]||[]).filter(s=>s.reps||s.peso||s.obs),isCustom:!!e.isCustom};
   }).filter(e=>e.feito||e.series.length>0);
   if(!exercicios.length){alert('Registre pelo menos um exercício antes de finalizar!');return;}
-  workoutHistory.unshift({
+
+  const newEntry={
     id:Date.now(),date:selectedDateKey.replace(/-/g,'/'),selectedDateKey,
     treino:activeTreino,label:TREINOS[activeTreino].label,exercicios
-  });
+  };
+
+  const existingIndex=workoutHistory.findIndex(s=>s.selectedDateKey===selectedDateKey && s.treino===activeTreino);
+  if(existingIndex>=0){
+    workoutHistory[existingIndex]=newEntry;
+  } else {
+    workoutHistory.unshift(newEntry);
+  }
+
+  workoutHistory.sort((a,b)=> new Date(b.selectedDateKey.split('-').reverse().join('-')) - new Date(a.selectedDateKey.split('-').reverse().join('-')) || b.id-a.id);
   sv('workoutHistory',workoutHistory);
   alert('Treino salvo! 💪');
 }
@@ -1015,7 +1044,7 @@ function renderProgression(){
       if(!e.series?.length) return;
       if(!exMap[e.name]) exMap[e.name]=[];
       const best=e.series.reduce((b,sr)=>parseFloat(sr.peso||0)>=parseFloat(b.peso||0)?sr:b,e.series[0]);
-      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps,vol:e.series.reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0).toFixed(0)});
+      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps});
     });
   });
   if(!Object.keys(exMap).length){el.innerHTML='<p class="empty">Treine para ver sua progressão aqui.</p>';return;}
@@ -1024,7 +1053,7 @@ function renderProgression(){
       const isBest=i===0;
       return `<div class="prog-row">
         <span class="prog-date">${r.date}</span>
-        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'} ${r.vol>0?`· vol ${r.vol}`:''}</span>
+        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}</span>
       </div>`;
     }).join('');
     return `<div class="prog-ex-card"><div class="prog-ex-name">${name}</div>${rows}</div>`;

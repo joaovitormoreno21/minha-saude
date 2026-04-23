@@ -75,6 +75,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .sel-btn small{display:block;font-size:10px;font-weight:400;opacity:0.75;margin-top:2px;}
 .add-ex-btn{width:100%;margin:10px 0 12px;padding:11px;background:rgba(79,127,255,0.08);border:0.5px dashed rgba(79,127,255,0.35);border-radius:var(--radius-sm);font-size:13px;color:var(--accent);cursor:pointer;font-family:var(--font);font-weight:600;}
 .custom-badge{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600;background:rgba(167,139,250,0.12);color:#c4b5fd;text-transform:uppercase;letter-spacing:0.04em;}
+.ex-actions{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;margin-top:1px;}
+.ex-del{width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,92,92,0.25);background:rgba(255,92,92,0.10);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;}
+.restore-btn{width:100%;margin:0 0 12px;padding:10px;background:rgba(167,139,250,0.10);border:0.5px dashed rgba(167,139,250,0.35);border-radius:var(--radius-sm);font-size:12px;color:#c4b5fd;cursor:pointer;font-family:var(--font);font-weight:600;}
 
 /* ── EXERCISE CARDS ── */
 .ecard{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
@@ -387,6 +390,7 @@ const TREINOS = {
     {id:'LOWER_B_base_3',icon:'🦵',name:'Panturrilha sentado',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
     {id:'LOWER_B_base_4',icon:'🦵',name:'Panturrilha em pé',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
   ]},
+  TREINO_LIVRE:{label:'Treino Livre',sub:'Monte do zero',icon:'🧩',obj:'Crie um treino do zero adicionando os exercícios que quiser.',exs:[]},
   CARDIO:{label:'Cardio',sub:'Corrida / Bicicleta',icon:'🚴',obj:'Registre tipo, tempo e distância do cardio.',exs:[
     {id:'CARDIO_base_0',icon:'🏃',name:'Corrida',meta:'Tempo e distância',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
     {id:'CARDIO_base_1',icon:'🚴',name:'Bicicleta',meta:'Tempo e distância',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
@@ -523,6 +527,7 @@ let modalMeal = null;
 let selectedFood = null;
 let exerciseSearchResults = [];
 let customExercises = {};
+let hiddenExercises = {};
 let savedExerciseLibrary = ld('savedExerciseLibrary', []);
 
 function normalizeExerciseLibrary(){
@@ -574,12 +579,15 @@ function loadDayState(dateKey){
   exSeries = ld('exSeries_'+selectedDateKey,{});
   foodLog = ld('foodLog_'+selectedDateKey, {});
   customExercises = ld('customExercises_'+selectedDateKey, {});
+  hiddenExercises = ld('hiddenExercises_'+selectedDateKey, {});
   normalizeExerciseLibrary();
   migrateCustomExercisesToLibrary();
   openPanel = null;
 }
 
 loadDayState(selectedDateKey);
+normalizeExerciseLibrary();
+migrateCustomExercisesToLibrary();
 
 // ═══════════════════════════════════════════════════════════
 // HEADER
@@ -638,8 +646,45 @@ function selTreino(k){
 // ═══════════════════════════════════════════════════════════
 // EXERCISES
 // ═══════════════════════════════════════════════════════════
+function getHiddenSet(){
+  return new Set((hiddenExercises[activeTreino]||[]));
+}
+
 function getCurrentExercises(){
-  return [...(TREINOS[activeTreino].exs||[]), ...((customExercises[activeTreino]||[]))];
+  const hidden=getHiddenSet();
+  const base=(TREINOS[activeTreino].exs||[]).filter(ex=>!hidden.has(ex.id));
+  return [...base, ...((customExercises[activeTreino]||[]))];
+}
+
+function saveHiddenExercises(){
+  sv('hiddenExercises_'+selectedDateKey, hiddenExercises);
+}
+
+function removeExerciseFromCurrentTreino(id){
+  const customList=customExercises[activeTreino]||[];
+  const customIdx=customList.findIndex(ex=>ex.id===id);
+  if(customIdx>=0){
+    customList.splice(customIdx,1);
+    customExercises[activeTreino]=customList;
+    saveCustomExercises();
+  }else{
+    if(!hiddenExercises[activeTreino]) hiddenExercises[activeTreino]=[];
+    if(!hiddenExercises[activeTreino].includes(id)) hiddenExercises[activeTreino].push(id);
+    saveHiddenExercises();
+  }
+  delete exChecked[id];
+  delete exSeries[id];
+  sv('exChecked_'+selectedDateKey,exChecked);
+  sv('exSeries_'+selectedDateKey,exSeries);
+  if(openPanel===id) openPanel=null;
+  renderExs();
+}
+
+function restoreDefaultExercises(){
+  if(!hiddenExercises[activeTreino]?.length) return;
+  hiddenExercises[activeTreino]=[];
+  saveHiddenExercises();
+  renderExs();
 }
 
 function makeExerciseId(){
@@ -731,7 +776,7 @@ function addCustomExerciseManual(){
     meta: meta || 'Personalizado',
     rest: rest || '1–2 min',
     tags:['personalizado'],
-    icon: activeTreino.startsWith('LOWER') ? '🦵' : activeTreino==='CARDIO' ? '🚴' : '🏋️',
+    icon: activeTreino.startsWith('LOWER') ? '🦵' : activeTreino==='CARDIO' ? '🚴' : activeTreino==='TREINO_LIVRE' ? '🧩' : '🏋️',
     defaultSeries: activeTreino==='CARDIO' ? 1 : 3,
     inputMode: activeTreino==='CARDIO' ? 'cardio' : 'strength'
   });
@@ -768,16 +813,18 @@ function renderExs(){
   const t=TREINOS[activeTreino];
   const exercises=getCurrentExercises();
   if(!exercises.length){
-    el.innerHTML=`<div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">${t.obj}</div></div>`;
+    el.innerHTML=`<div class="t-hdr"><div class="t-label">${t.label} — ${t.sub}</div><div class="t-obj">${t.obj}</div></div><button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button><div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">Adicione exercícios para montar este treino do zero.</div></div>`;
     return;
   }
   const done=exercises.filter(e=>exChecked[e.id]).length;
   const pct=exercises.length?Math.round(done/exercises.length*100):0;
 
+  const hiddenCount=(hiddenExercises[activeTreino]||[]).length;
   let html=`<div class="t-hdr"><div class="t-label">${t.label} — ${t.sub}</div><div class="t-obj">${t.obj}</div></div>
     <div class="prog-info"><span>${done} de ${exercises.length} concluídos</span><span>${pct}%</span></div>
     <div class="pbar-w"><div class="pbar-f" style="width:${pct}%"></div></div>
-    <button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button>`;
+    <button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button>
+    ${hiddenCount?`<button class="restore-btn" onclick="restoreDefaultExercises()">↺ Restaurar exercícios padrão removidos (${hiddenCount})</button>`:''}`;
 
   exercises.forEach((e,i)=>{
     const k=e.id||`${activeTreino}_${i}`;
@@ -800,9 +847,12 @@ function renderExs(){
           ${e.isCustom?'<div class="custom-badge">extra</div>':''}
           ${chips?`<div class="saved-chips">${chips}</div>`:''}
         </div>
-        <button class="echk${isDone?' done':''}" onclick="event.stopPropagation();toggleEx('${k}')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
+        <div class="ex-actions">
+          <button class="echk${isDone?' done':''}" onclick="event.stopPropagation();toggleEx('${k}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+          <button class="ex-del" title="Excluir exercício" onclick="event.stopPropagation();removeExerciseFromCurrentTreino('${k}')">×</button>
+        </div>
       </div>
       <div class="log-panel${isOpen?' open':''}" id="panel-${k}">
         <div class="log-panel-hdr">
@@ -918,7 +968,7 @@ function showHistView(v,btn){
 
 function renderHistTabs(){
   const keys=['ALL',...Object.keys(TREINOS)];
-  const labels={ALL:'Todos',UPPER_A:'Upper A',LOWER_A:'Lower A',UPPER_B:'Upper B',LOWER_B:'Lower B',CARDIO:'Cardio'};
+  const labels={ALL:'Todos',UPPER_A:'Upper A',LOWER_A:'Lower A',UPPER_B:'Upper B',LOWER_B:'Lower B',TREINO_LIVRE:'Treino Livre',CARDIO:'Cardio'};
   document.getElementById('htabs').innerHTML=keys.map(k=>
     `<button class="htab${histFilter===k?' on':''}" onclick="filterHist('${k}',this)">${labels[k]||k}</button>`).join('');
 }

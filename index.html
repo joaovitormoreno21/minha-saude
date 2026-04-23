@@ -229,34 +229,50 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .today-status.done{background:rgba(45,212,160,0.12);color:var(--accent2);}
 .home-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .quick-btn{padding:11px 12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);}
+/* ── WEEK GRID ── */
 .week-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
-.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.week-day{background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;padding:10px 6px;text-align:center;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;}
-.week-day.today{border-color:var(--accent);box-shadow:0 0 0 1px rgba(79,127,255,0.25) inset;}
-.week-day.done{background:rgba(45,212,160,0.08);}
-.week-wk{font-size:10px;color:var(--text3);text-transform:uppercase;}
-.week-num{font-size:15px;font-weight:600;}
-.week-check{font-size:16px;line-height:1;}
-.week-train{font-size:10px;color:var(--text2);line-height:1.25;}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.week-day{background:var(--bg3);border:0.5px solid var(--border2);border-radius:12px;padding:8px 4px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:90px;position:relative;overflow:hidden;}
+.week-day.today{border-color:var(--accent);background:rgba(79,127,255,0.07);}
+.week-day.done{background:rgba(45,212,160,0.1);border-color:rgba(45,212,160,0.25);}
+.week-day.missed{background:rgba(255,92,92,0.08);border-color:rgba(255,92,92,0.2);}
+.week-wk{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;font-weight:500;}
+.week-day.today .week-wk{color:var(--accent);}
+.week-num{font-size:15px;font-weight:700;font-family:var(--mono);line-height:1;color:var(--text);}
+.week-icon{font-size:18px;line-height:1;}
+.week-train{font-size:9px;color:var(--text3);line-height:1.2;padding:0 2px;}
+.week-day.done .week-train{color:var(--accent2);}
+.week-day.missed .week-train{color:var(--red);}
+.week-day.today .week-num{color:var(--accent);}
+
+/* ── HOME METRICS ── */
 .home-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;}
 .metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
 .metric-value{font-size:22px;font-weight:600;font-family:var(--mono);}
 .metric-sub{font-size:12px;color:var(--text2);margin-top:4px;}
 
-
+/* ── MONTH CALENDAR ── */
 .month-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
-.month-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:10px;}
+.month-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;}
 .month-title{font-size:14px;font-weight:600;text-transform:capitalize;}
-.month-legend{font-size:10px;color:var(--text3);}
-.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-.month-dow{font-size:10px;color:var(--text3);text-transform:uppercase;text-align:center;padding-bottom:2px;}
-.month-cell{aspect-ratio:1/1;min-height:38px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:10px;padding:5px 4px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;}
+.month-legend{display:flex;align-items:center;gap:10px;}
+.month-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text3);}
+.month-legend-dot{width:8px;height:8px;border-radius:2px;}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.month-dow{font-size:9px;color:var(--text3);text-transform:uppercase;text-align:center;padding-bottom:4px;letter-spacing:0.04em;font-weight:500;}
+.month-cell{aspect-ratio:1/1;border-radius:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;background:var(--bg3);border:0.5px solid var(--border2);position:relative;}
 .month-cell.empty{background:transparent;border-color:transparent;}
-.month-cell.today{border-color:var(--accent);box-shadow:0 0 0 1px rgba(79,127,255,0.25) inset;}
+.month-cell.future{background:var(--bg3);border-color:var(--border);}
+.month-cell.trained{background:rgba(45,212,160,0.18);border-color:rgba(45,212,160,0.35);}
+.month-cell.missed{background:rgba(255,92,92,0.14);border-color:rgba(255,92,92,0.25);}
+.month-cell.rest-day{background:var(--bg3);border-color:var(--border2);}
+.month-cell.today{box-shadow:0 0 0 1.5px var(--accent);}
 .month-day-num{font-size:11px;font-weight:600;color:var(--text);}
-.month-mark{font-size:12px;font-weight:700;line-height:1;color:var(--accent2);}
-.month-mark.off{color:var(--text3);font-weight:600;}
+.month-cell.trained .month-day-num{color:#2dd4a0;}
+.month-cell.missed .month-day-num{color:#ff7a7a;}
+.month-cell.future .month-day-num{color:var(--text3);}
+.month-cell-icon{font-size:10px;line-height:1;}
 
 /* FINALIZE BTN */
 .finalize-btn{width:100%;margin-top:10px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
@@ -772,14 +788,20 @@ function renderHome(){
     const code=getPlanCodeForDate(d);
     const done=isWorkoutDoneForDate(d, code);
     const isToday=dateKeyFromDate(d)===dateKeyFromDate(now);
-    const icon=done?'✔️':(isToday?'●':'⬜');
-    days.push(`<div class="week-day${done?' done':''}${isToday?' today':''}">
-      <div>
-        <div class="week-wk">${WEEKDAY_SHORT[d.getDay()]}</div>
-        <div class="week-num">${String(d.getDate()).padStart(2,'0')}</div>
-      </div>
-      <div class="week-check">${icon}</div>
-      <div class="week-train">${getPlanLabel(code)}</div>
+    const isPast=d<now && !isToday;
+    const isRest=code==='DESCANSO';
+    const missed=isPast && !done && !isRest;
+    let stateClass='';
+    if(done) stateClass=' done';
+    else if(missed) stateClass=' missed';
+    if(isToday) stateClass+=' today';
+    const icon=done?'✅':isRest?'😴':isToday?'⚡':isPast?'❌':'○';
+    const shortLabel=isRest?'Descanso':(TREINOS[code]?.label||code);
+    days.push(`<div class="week-day${stateClass}">
+      <div class="week-wk">${WEEKDAY_SHORT[d.getDay()]}</div>
+      <div class="week-num">${String(d.getDate()).padStart(2,'0')}</div>
+      <div class="week-icon">${icon}</div>
+      <div class="week-train">${shortLabel}</div>
     </div>`);
   }
   grid.innerHTML=days.join('');
@@ -792,7 +814,7 @@ function renderHome(){
   const lastDay=new Date(now.getFullYear(), now.getMonth()+1, 0);
   const startOffset=firstDay.getDay();
   const monthCells=[];
-  ['dom','seg','ter','qua','qui','sex','sáb'].forEach(dow=> monthCells.push(`<div class="month-dow">${dow}</div>`));
+  ['D','S','T','Q','Q','S','S'].forEach(dow=> monthCells.push(`<div class="month-dow">${dow}</div>`));
   for(let i=0;i<startOffset;i++) monthCells.push('<div class="month-cell empty"></div>');
   for(let day=1; day<=lastDay.getDate(); day++){
     const d=new Date(now.getFullYear(), now.getMonth(), day);
@@ -800,11 +822,25 @@ function renderHome(){
     const daySessions=(workoutHistory||[]).filter(s => (s.selectedDateKey||'')===key || (s.date||'').replace(/\//g,'-')===key);
     const trained=daySessions.length>0;
     const isToday=key===dateKeyFromDate(now);
-    monthCells.push(`<div class="month-cell${isToday?' today':''}">
+    const isPast=d<now && !isToday;
+    const planCode=getPlanCodeForDate(d);
+    const isRest=planCode==='DESCANSO';
+    let cellClass='month-cell';
+    let cellIcon='';
+    if(trained){ cellClass+=' trained'; cellIcon='✓'; }
+    else if(isPast && !isRest){ cellClass+=' missed'; cellIcon='✕'; }
+    else if(!isPast && !isToday){ cellClass+=' future'; }
+    else if(isRest){ cellClass+=' rest-day'; }
+    if(isToday) cellClass+=' today';
+    monthCells.push(`<div class="${cellClass}">
       <div class="month-day-num">${String(day).padStart(2,'0')}</div>
-      <div class="month-mark${trained?'':' off'}">${trained?'✓':'x'}</div>
+      ${cellIcon?`<div class="month-cell-icon">${cellIcon}</div>`:''}
     </div>`);
   }
+  // legend
+  document.getElementById('home-month-title').parentElement.querySelector('.month-legend').innerHTML=`
+    <div class="month-legend-item"><div class="month-legend-dot" style="background:rgba(45,212,160,0.5);"></div>Treino</div>
+    <div class="month-legend-item"><div class="month-legend-dot" style="background:rgba(255,92,92,0.45);"></div>Faltou</div>`;
   monthGrid.innerHTML=monthCells.join('');
 
   const latest=getLatestWeight();

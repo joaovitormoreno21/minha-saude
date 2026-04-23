@@ -1,5 +1,5 @@
-const CACHE = 'minha-saude-v1';
-const FILES = ['/', '/index.html', '/manifest.json'];
+const CACHE = 'minha-saude-v2';
+const FILES = ['/minha-saude/', '/minha-saude/index.html', '/minha-saude/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));

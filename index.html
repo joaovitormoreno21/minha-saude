@@ -82,7 +82,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ecard-top{display:flex;gap:11px;align-items:flex-start;padding:13px;cursor:pointer;}
 .eicon{width:38px;height:38px;border-radius:9px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .einfo{flex:1;min-width:0;}
+.ehead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
 .ename{font-size:14px;font-weight:500;margin-bottom:2px;}
+.ex-del-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1;padding:0 2px;flex-shrink:0;}
+.ex-del-btn:hover{color:var(--red);}
 .emeta{font-size:11px;color:var(--text2);font-family:var(--mono);margin-bottom:5px;}
 .etags{display:flex;flex-wrap:wrap;gap:3px;}
 .saved-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
@@ -374,14 +377,15 @@ const TREINOS = {
     {id:'UPPER_B_base_2',icon:'🦾',name:'Remada',meta:'3x8-10',tags:['costas'],rest:'1,5 min',defaultSeries:3},
     {id:'UPPER_B_base_3',icon:'💪',name:'Crossover',meta:'2x12-15',tags:['peito'],rest:'1 min',defaultSeries:2},
     {id:'UPPER_B_base_4',icon:'💪',name:'Elevação lateral',meta:'2-3x12-15',tags:['ombro'],rest:'1 min',defaultSeries:3},
-    {id:'UPPER_B_base_5',icon:'💪',name:'Bíceps/Tríceps',meta:'2x10 cada',tags:['bracos'],rest:'1 min',defaultSeries:4},
+    {id:'UPPER_B_base_5',icon:'💪',name:'Rosca bíceps',meta:'2x10',tags:['bracos'],rest:'1 min',defaultSeries:2},
+    {id:'UPPER_B_base_6',icon:'💪',name:'Tríceps pulley',meta:'2x10',tags:['bracos'],rest:'1 min',defaultSeries:2},
   ]},
   LOWER_B:{label:'Lower B',sub:'Posterior e Base',icon:'🦵',obj:'Foco em posterior e estabilidade.',exs:[
     {id:'LOWER_B_base_0',icon:'🦵',name:'Stiff',meta:'3x6-8',tags:['posterior','principal'],rest:'2 min',defaultSeries:3},
     {id:'LOWER_B_base_1',icon:'🦵',name:'Leg press',meta:'2x10',tags:['volume'],rest:'1,5–2 min',defaultSeries:2},
     {id:'LOWER_B_base_2',icon:'🦵',name:'Flexora unilateral',meta:'2x10-12',tags:['posterior'],rest:'1–1,5 min',defaultSeries:2},
     {id:'LOWER_B_base_3',icon:'🦵',name:'Panturrilha sentado',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
-    {id:'LOWER_B_base_3',icon:'🦵',name:'Panturrilha em pé',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
+    {id:'LOWER_B_base_4',icon:'🦵',name:'Panturrilha em pé',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
   ]},
   CARDIO:{label:'Cardio',sub:'Corrida / Bicicleta',icon:'🚴',obj:'Registre tipo, tempo e distância do cardio.',exs:[
     {id:'CARDIO_base_0',icon:'🏃',name:'Corrida',meta:'Tempo e distância',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
@@ -396,7 +400,8 @@ const EXERCISE_DB = [
   {name:'Flexora',icon:'🦵',tags:['posterior'],rest:'1–1,5 min',defaultSeries:2},
   {name:'Flexora unilateral',icon:'🦵',tags:['posterior'],rest:'1–1,5 min',defaultSeries:2},
   {name:'Extensora',icon:'🦵',tags:['isolado'],rest:'1–1,5 min',defaultSeries:2},
-  {name:'Panturrilha',icon:'🦵',tags:['finalizador'],rest:'1 min',defaultSeries:3},
+  {name:'Panturrilha sentado',icon:'🦵',tags:['finalizador'],rest:'1 min',defaultSeries:3},
+  {name:'Panturrilha em pé',icon:'🦵',tags:['finalizador'],rest:'1 min',defaultSeries:3},
   {name:'Stiff',icon:'🦵',tags:['posterior','principal'],rest:'2 min',defaultSeries:3},
   {name:'Afundo',icon:'🦵',tags:['gluteo'],rest:'1,5 min',defaultSeries:3},
   {name:'Cadeira abdutora',icon:'🦵',tags:['gluteo'],rest:'1 min',defaultSeries:3},
@@ -408,15 +413,16 @@ const EXERCISE_DB = [
   {name:'Flexão',icon:'🔥',tags:['finalizador'],rest:'1 min',defaultSeries:2},
   {name:'Barra fixa',icon:'🦾',tags:['costas','composto'],rest:'2 min',defaultSeries:3},
   {name:'Barra fixa (pronada)',icon:'🦾',tags:['costas','composto'],rest:'2 min',defaultSeries:3},
-  {name:'Remada Cavalinho Maquina',icon:'🦾',tags:['costas'],rest:'1,5 min',defaultSeries:3},
-  {name:'Remada Máquina Aberta',icon:'🦾',tags:['costas'],rest:'1,5–2 min',defaultSeries:3},
+  {name:'Remada',icon:'🦾',tags:['costas'],rest:'1,5 min',defaultSeries:3},
+  {name:'Remada máquina',icon:'🦾',tags:['costas'],rest:'1,5–2 min',defaultSeries:3},
   {name:'Remada unilateral',icon:'🦾',tags:['costas'],rest:'1 min',defaultSeries:3},
   {name:'Puxada frontal',icon:'🦾',tags:['costas'],rest:'1,5 min',defaultSeries:3},
   {name:'Elevação lateral',icon:'💪',tags:['ombro'],rest:'1 min',defaultSeries:3},
   {name:'Desenvolvimento halteres',icon:'💪',tags:['ombro'],rest:'1,5 min',defaultSeries:3},
   {name:'Rosca bíceps',icon:'💪',tags:['bracos'],rest:'1 min',defaultSeries:2},
   {name:'Tríceps pulley',icon:'💪',tags:['bracos'],rest:'1 min',defaultSeries:2},
-  {name:'Bíceps/Tríceps',icon:'💪',tags:['bracos'],rest:'1 min',defaultSeries:4},
+  {name:'Rosca bíceps',icon:'💪',tags:['bracos'],rest:'1 min',defaultSeries:2},
+  {name:'Tríceps pulley',icon:'💪',tags:['bracos'],rest:'1 min',defaultSeries:2},
   {name:'Abdominal',icon:'🧱',tags:['core'],rest:'1 min',defaultSeries:3},
   {name:'Prancha',icon:'🧱',tags:['core'],rest:'1 min',defaultSeries:3},
   {name:'Corrida',icon:'🏃',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
@@ -517,6 +523,48 @@ let modalMeal = null;
 let selectedFood = null;
 let exerciseSearchResults = [];
 let customExercises = {};
+let savedExerciseLibrary = ld('savedExerciseLibrary', []);
+
+function normalizeExerciseLibrary(){
+  const seen=new Set();
+  savedExerciseLibrary=(savedExerciseLibrary||[]).filter(Boolean).map(ex=>({
+    name: ex.name,
+    icon: ex.icon||'🏋️',
+    tags: Array.isArray(ex.tags)?ex.tags:[],
+    rest: ex.rest||'1–2 min',
+    defaultSeries: ex.defaultSeries||3,
+    inputMode: ex.inputMode||'strength'
+  })).filter(ex=>{
+    const key=(ex.name||'').trim().toLowerCase();
+    if(!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  sv('savedExerciseLibrary', savedExerciseLibrary);
+}
+
+function migrateCustomExercisesToLibrary(){
+  let changed=false;
+  Object.values(customExercises||{}).forEach(list=>{
+    (list||[]).forEach(ex=>{
+      const name=(ex.name||'').trim();
+      if(!name) return;
+      const exists=savedExerciseLibrary.some(item=>item.name.toLowerCase()===name.toLowerCase());
+      if(!exists){
+        savedExerciseLibrary.push({
+          name,
+          icon: ex.icon||'🏋️',
+          tags: Array.isArray(ex.tags)?ex.tags:[],
+          rest: ex.rest||'1–2 min',
+          defaultSeries: ex.defaultSeries||3,
+          inputMode: ex.inputMode||'strength'
+        });
+        changed=true;
+      }
+    });
+  });
+  if(changed) normalizeExerciseLibrary();
+}
 
 function loadDayState(dateKey){
   selectedDateKey = dateKey;
@@ -526,6 +574,8 @@ function loadDayState(dateKey){
   exSeries = ld('exSeries_'+selectedDateKey,{});
   foodLog = ld('foodLog_'+selectedDateKey, {});
   customExercises = ld('customExercises_'+selectedDateKey, {});
+  normalizeExerciseLibrary();
+  migrateCustomExercisesToLibrary();
   openPanel = null;
 }
 
@@ -598,6 +648,7 @@ function makeExerciseId(){
 
 function saveCustomExercises(){
   sv('customExercises_'+selectedDateKey, customExercises);
+  sv('savedExerciseLibrary', savedExerciseLibrary);
 }
 
 function addExerciseToCurrentTreino(ex){
@@ -613,6 +664,18 @@ function addExerciseToCurrentTreino(ex){
     inputMode:ex.inputMode||'strength',
     isCustom:true
   });
+  const name=(ex.name||'').trim();
+  if(name && !savedExerciseLibrary.some(item=>item.name.toLowerCase()===name.toLowerCase())){
+    savedExerciseLibrary.push({
+      name,
+      icon: ex.icon||'🏋️',
+      tags: ex.tags||[],
+      rest: ex.rest||'1–2 min',
+      defaultSeries: ex.defaultSeries||3,
+      inputMode: ex.inputMode||'strength'
+    });
+    normalizeExerciseLibrary();
+  }
   saveCustomExercises();
   renderExs();
   closeExerciseModal();
@@ -638,7 +701,14 @@ function searchExercise(q){
   const list=document.getElementById('exercise-results');
   if(q.length<1){list.innerHTML=''; exerciseSearchResults=[]; return;}
   const ql=q.toLowerCase();
-  exerciseSearchResults=EXERCISE_DB.filter(ex=>ex.name.toLowerCase().includes(ql)).slice(0,12);
+  const merged=[...EXERCISE_DB, ...savedExerciseLibrary];
+  const seen=new Set();
+  exerciseSearchResults=merged.filter(ex=>{
+    const name=(ex.name||'').toLowerCase();
+    if(!name.includes(ql) || seen.has(name)) return false;
+    seen.add(name);
+    return true;
+  }).slice(0,16);
   list.innerHTML=exerciseSearchResults.length ? exerciseSearchResults.map((ex,i)=>`<div class="food-result" onclick="addExerciseFromDb(${i})">
       <div><div class="food-result-name">${ex.icon||'🏋️'} ${ex.name}</div><div class="food-result-info">${(ex.tags||[]).join(' · ')||'Exercício'}${ex.rest?` · descanso ${ex.rest}`:''}</div></div>
       <span class="food-result-kcal">+ adicionar</span>
@@ -665,6 +735,21 @@ function addCustomExerciseManual(){
     defaultSeries: activeTreino==='CARDIO' ? 1 : 3,
     inputMode: activeTreino==='CARDIO' ? 'cardio' : 'strength'
   });
+}
+
+function deleteExercise(exId){
+  const all=getCurrentExercises();
+  const target=all.find(item=>(item.id||'')===exId);
+  if(!target || !target.isCustom) return;
+  if(!confirm(`Excluir ${target.name} deste treino?`)) return;
+  customExercises[activeTreino]=(customExercises[activeTreino]||[]).filter(item=>item.id!==exId);
+  delete exChecked[exId];
+  delete exSeries[exId];
+  sv('exChecked_'+selectedDateKey, exChecked);
+  sv('exSeries_'+selectedDateKey, exSeries);
+  saveCustomExercises();
+  if(openPanel===exId) openPanel=null;
+  renderExs();
 }
 
 function getLastPerf(exName){
@@ -706,7 +791,10 @@ function renderExs(){
       <div class="ecard-top" onclick="togglePanel('${k}',${e.defaultSeries||3})">
         <div class="eicon">${e.icon}</div>
         <div class="einfo">
-          <div class="ename">${e.name}</div>
+          <div class="ehead">
+            <div class="ename">${e.name}</div>
+            ${e.isCustom?`<button class="ex-del-btn" title="Excluir exercício" onclick="event.stopPropagation();deleteExercise('${k}')">×</button>`:''}
+          </div>
           <div class="emeta">${e.meta} · descanso ${e.rest}</div>
           <div class="etags">${(e.tags||[]).map(t=>`<span class="tag ${tagColors[t]||'tag-blue'}">${t}</span>`).join('')}</div>
           ${e.isCustom?'<div class="custom-badge">extra</div>':''}
@@ -852,11 +940,16 @@ function renderSessions(){
         <span class="hsession-date">${s.date}</span>
       </div>
       ${s.exercicios.map(e=>{
-        const chips=e.series.filter(sr=>sr.reps||sr.peso).map((sr,i)=>`<span class="hex-chip">S${i+1}: ${sr.peso?sr.peso+'kg':'—'}×${sr.reps||'—'}</span>`).join('');
-        const obs=e.series[0]?.obs;
+        const chips=(e.series||[]).filter(sr=>sr.reps||sr.peso).map((sr,i)=>{
+          const isCardio = /corrida|bicicleta/i.test(e.name||'');
+          const peso = sr.peso ? (isCardio ? sr.peso+'km' : sr.peso+'kg') : '—';
+          const reps = sr.reps ? (isCardio ? sr.reps+'min' : sr.reps) : '—';
+          return `<span class="hex-chip">S${i+1}: ${peso} × ${reps}</span>`;
+        }).join('');
+        const obs=e.series?.[0]?.obs;
         return `<div class="hex">
           <div class="hex-name">${e.name}${e.feito&&!chips?' <span style="font-size:11px;color:var(--accent2);">✓</span>':''}</div>
-          ${chips?`<div class="hex-chips">${chips}</div>`:''}
+          ${chips?`<div class="hex-chips">${chips}</div>`:'<div class="hex-chips"><span class="hex-chip">Sem carga registrada</span></div>'}
           ${obs?`<div class="hex-obs">${obs}</div>`:''}
         </div>`;
       }).join('')}
@@ -1031,6 +1124,7 @@ function showScreen(id,btn){
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
+normalizeExerciseLibrary();
 initHeader();
 renderSelector();
 renderExs();

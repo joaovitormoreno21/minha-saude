@@ -274,6 +274,31 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .month-cell.future .month-day-num{color:var(--text3);}
 .month-cell-icon{font-size:8px;line-height:1;}
 
+/* ── IA ALIMENTAÇÃO ── */
+.ai-food-btn{width:100%;padding:13px 16px;background:linear-gradient(135deg,rgba(79,127,255,0.15),rgba(167,139,250,0.15));border:0.5px solid rgba(167,139,250,0.35);border-radius:var(--radius-sm);font-size:14px;font-weight:600;color:#c4b5fd;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;transition:all 0.15s;}
+.ai-food-btn:active{opacity:0.8;}
+.ai-food-btn svg{width:18px;height:18px;stroke:#c4b5fd;flex-shrink:0;}
+.ai-modal-inp{width:100%;padding:12px 14px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;background:var(--bg3);color:var(--text);font-family:var(--font);outline:none;resize:none;min-height:90px;line-height:1.5;margin-bottom:12px;}
+.ai-modal-inp:focus{border-color:var(--purple);}
+.ai-modal-inp::placeholder{color:var(--text3);}
+.ai-send-btn{width:100%;padding:13px;background:var(--purple);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;}
+.ai-send-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.ai-send-btn svg{width:16px;height:16px;stroke:#fff;}
+.ai-result-wrap{margin-top:14px;display:none;}
+.ai-result-title{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.ai-food-preview{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;}
+.ai-food-preview-name{font-size:13px;font-weight:500;margin-bottom:2px;}
+.ai-food-preview-meta{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.ai-food-preview-meal{font-size:10px;color:var(--purple);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:0.04em;}
+.ai-inp-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;}
+.ai-inp-row .ai-modal-inp{margin-bottom:0;flex:1;}
+.mic-btn{width:46px;height:46px;border-radius:50%;border:0.5px solid rgba(167,139,250,0.35);background:rgba(167,139,250,0.1);color:#c4b5fd;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;margin-top:0;}
+.mic-btn.recording{background:rgba(255,92,92,0.2);border-color:rgba(255,92,92,0.5);color:var(--red);animation:micPulse 1s ease-in-out infinite;}
+.mic-btn svg{width:20px;height:20px;stroke:currentColor;}
+.ai-confirm-btn{width:100%;padding:12px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+.ai-status{font-size:13px;color:var(--text2);text-align:center;padding:16px 0;display:none;}
+.ai-error{font-size:13px;color:var(--red);text-align:center;padding:8px 0;display:none;}
+
 /* FINALIZE BTN */
 .finalize-btn{width:100%;margin-top:10px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
 </style>
@@ -397,6 +422,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
         <div style="text-align:center;font-size:12px;color:var(--text3);">Meta: <span style="color:var(--amber);font-family:var(--mono);">2850 kcal</span> · <span id="cal-remaining" style="font-family:var(--mono);">2850 restantes</span></div>
       </div>
 
+      <button class="ai-food-btn" onclick="openAiModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M18 2v6h6"/><path d="M9 12l2 2 4-4"/></svg>
+        Descrever o que comi com IA
+      </button>
+
       <div id="meal-sections"></div>
     </div>
 
@@ -442,7 +472,35 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ══ MODAL ADICIONAR ALIMENTO ══ -->
+<!-- ══ MODAL IA ALIMENTAÇÃO ══ -->
+<div class="modal-overlay" id="ai-food-modal" onclick="closeAiModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">✨ Registrar com IA</span>
+      <button class="modal-close" onclick="closeAiModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Descreva o que comeu em linguagem natural. Ex: <em style="color:var(--text3);">"no almoço comi 200g de frango, arroz e salada"</em></p>
+    <div class="ai-inp-row">
+      <textarea class="ai-modal-inp" id="ai-food-inp" placeholder="Ex: tomei café da manhã com 3 ovos mexidos, uma banana e pão integral..."></textarea>
+      <button class="mic-btn" id="mic-btn" onclick="toggleMic()" title="Falar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+      </button>
+    </div>
+    <button class="ai-send-btn" id="ai-send-btn" onclick="sendAiFood()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Analisar com IA
+    </button>
+    <div class="ai-status" id="ai-status">🤖 Analisando sua refeição...</div>
+    <div class="ai-error" id="ai-error"></div>
+    <div class="ai-result-wrap" id="ai-result-wrap">
+      <div class="ai-result-title">Alimentos identificados — confirme antes de adicionar</div>
+      <div id="ai-preview-list"></div>
+      <button class="ai-confirm-btn" onclick="confirmAiFood()">✓ Adicionar tudo ao diário</button>
+    </div>
+  </div>
+</div>
+
+
 <div class="modal-overlay" id="food-modal" onclick="closeModal(event)">
   <div class="modal">
     <div class="modal-hdr">
@@ -1459,6 +1517,181 @@ function confirmAddFood(){
   sv('foodLog_'+selectedDateKey,foodLog);
   document.getElementById('food-modal').classList.remove('open');
   renderMealSections();
+}
+
+// ═══════════════════════════════════════════════════════════
+// IA ALIMENTAÇÃO
+// ═══════════════════════════════════════════════════════════
+let aiPendingFoods = []; // [{name, qty, kcal, p, c, f, meal}]
+
+function openAiModal(){
+  document.getElementById('ai-food-modal').classList.add('open');
+  document.getElementById('ai-food-inp').value='';
+  document.getElementById('ai-result-wrap').style.display='none';
+  document.getElementById('ai-status').style.display='none';
+  document.getElementById('ai-error').style.display='none';
+  document.getElementById('ai-send-btn').disabled=false;
+  aiPendingFoods=[];
+  setTimeout(()=>document.getElementById('ai-food-inp').focus(),200);
+}
+
+function closeAiModal(e){
+  if(e&&e.target!==document.getElementById('ai-food-modal')) return;
+  stopMic();
+  document.getElementById('ai-food-modal').classList.remove('open');
+}
+
+async function sendAiFood(){
+  const text=document.getElementById('ai-food-inp').value.trim();
+  if(!text) return;
+
+  const btn=document.getElementById('ai-send-btn');
+  const status=document.getElementById('ai-status');
+  const errorEl=document.getElementById('ai-error');
+  const resultWrap=document.getElementById('ai-result-wrap');
+
+  btn.disabled=true;
+  status.style.display='block';
+  errorEl.style.display='none';
+  resultWrap.style.display='none';
+  aiPendingFoods=[];
+
+  const FOOD_LIST = FOOD_DB.map(f=>f.name).join(', ');
+  const MEAL_LIST = MEAL_NAMES.join(', ');
+
+  const systemPrompt = `Você é um nutricionista especializado em análise de refeições. 
+O usuário vai descrever o que comeu em linguagem natural. Sua tarefa é identificar os alimentos, estimar as quantidades em gramas e classificar em qual refeição pertence.
+
+Refeições disponíveis: ${MEAL_LIST}
+
+Base de alimentos disponível (use os nomes exatos quando possível): ${FOOD_LIST}
+
+Regras:
+- Se o alimento existir na base, use o nome EXATO da base
+- Se não existir, use o nome mais próximo ou descritivo
+- Estime quantidades realisticamente (ex: 1 banana média = 100g, 1 ovo = 50g, 1 fatia de pão = 40g)
+- Classifique na refeição correta com base no contexto (café da manhã, almoço etc)
+- Se não mencionar a refeição, deduza pelo contexto (manhã = café da manhã, meio-dia = almoço etc)
+
+Responda APENAS com um JSON válido, sem texto adicional, sem markdown, sem explicações:
+{
+  "items": [
+    {"name": "nome do alimento", "qty": 100, "meal": "nome da refeição"},
+    ...
+  ]
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{role:'user', content: text}]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.map(b=>b.text||'').join('').trim();
+
+    let parsed;
+    try {
+      const clean = raw.replace(/```json|```/g,'').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      throw new Error('A IA retornou um formato inesperado. Tente descrever de outra forma.');
+    }
+
+    if(!parsed.items?.length) throw new Error('Nenhum alimento identificado. Tente ser mais específico.');
+
+    // Resolve each item against FOOD_DB or create custom entry
+    aiPendingFoods = parsed.items.map(item => {
+      const meal = MEAL_NAMES.includes(item.meal) ? item.meal : MEAL_NAMES[0];
+      const qty = parseFloat(item.qty) || 100;
+      const dbMatch = FOOD_DB.find(f => f.name.toLowerCase() === item.name.toLowerCase())
+                   || FOOD_DB.find(f => f.name.toLowerCase().includes(item.name.toLowerCase().split(' ')[0]));
+      if(dbMatch) {
+        const f = qty/100;
+        return {name:dbMatch.name, qty, kcal:dbMatch.kcal*f, p:dbMatch.p*f, c:dbMatch.c*f, f:dbMatch.f*f, meal};
+      } else {
+        // Unknown food — estimate generically
+        return {name:item.name, qty, kcal:qty*1.5, p:qty*0.08, c:qty*0.15, f:qty*0.05, meal, unknown:true};
+      }
+    });
+
+    // Show preview
+    document.getElementById('ai-preview-list').innerHTML = aiPendingFoods.map((it,i)=>`
+      <div class="ai-food-preview">
+        <div class="ai-food-preview-name">${it.name}${it.unknown?' <span style="font-size:10px;color:var(--amber);">estimado</span>':''}</div>
+        <div class="ai-food-preview-meta">${it.qty}g · ${Math.round(it.kcal)} kcal · P:${Math.round(it.p)}g C:${Math.round(it.c)}g G:${Math.round(it.f)}g</div>
+        <div class="ai-food-preview-meal">${it.meal}</div>
+      </div>`).join('');
+
+    status.style.display='none';
+    resultWrap.style.display='block';
+
+  } catch(err) {
+    status.style.display='none';
+    errorEl.textContent = '⚠️ '+(err.message||'Erro ao conectar com a IA. Verifique sua internet.');
+    errorEl.style.display='block';
+    btn.disabled=false;
+  }
+}
+
+// ── MIC ──
+let recognition = null;
+let isRecording = false;
+
+function toggleMic(){
+  if(isRecording){ stopMic(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ alert('Reconhecimento de voz não suportado neste navegador. Use o Safari no iOS.'); return; }
+  recognition = new SR();
+  recognition.lang = 'pt-BR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  const inp = document.getElementById('ai-food-inp');
+  const btn = document.getElementById('mic-btn');
+  const base = inp.value;
+  recognition.onstart = ()=>{
+    isRecording = true;
+    btn.classList.add('recording');
+    btn.title = 'Tocou para parar';
+  };
+  recognition.onresult = (e)=>{
+    let interim='', final='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    inp.value = (base + final || '') + interim;
+  };
+  recognition.onerror = (e)=>{
+    if(e.error!=='aborted') alert('Erro no microfone: '+e.error);
+    stopMic();
+  };
+  recognition.onend = ()=>{ stopMic(); };
+  recognition.start();
+}
+
+function stopMic(){
+  isRecording = false;
+  recognition?.stop();
+  document.getElementById('mic-btn')?.classList.remove('recording');
+  document.getElementById('mic-btn').title='Falar';
+}
+
+
+  if(!aiPendingFoods.length) return;
+  aiPendingFoods.forEach(it=>{
+    if(!foodLog[it.meal]) foodLog[it.meal]=[];
+    foodLog[it.meal].push({name:it.name, qty:it.qty, kcal:it.kcal, p:it.p, c:it.c, f:it.f});
+  });
+  sv('foodLog_'+selectedDateKey, foodLog);
+  document.getElementById('ai-food-modal').classList.remove('open');
+  renderMealSections();
+  aiPendingFoods=[];
 }
 
 // ═══════════════════════════════════════════════════════════

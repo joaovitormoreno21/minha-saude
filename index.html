@@ -308,6 +308,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .backup-toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 12px);left:50%;transform:translateX(-50%);background:#1e2333;border:0.5px solid var(--border2);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:500;color:var(--text);z-index:200;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;}
 .backup-toast.show{opacity:1;}
 
+/* ── STREAK ── */
+.streak-card{background:linear-gradient(135deg,rgba(245,166,35,0.12),rgba(255,92,92,0.08));border:0.5px solid rgba(245,166,35,0.25);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px;}
+.streak-flame{font-size:32px;line-height:1;flex-shrink:0;}
+.streak-info{flex:1;}
+.streak-num{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--amber);line-height:1;}
+.streak-lbl{font-size:12px;color:var(--text2);margin-top:2px;}
+.streak-best{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* ── WEEK PLANNING ── */
+.week-day{cursor:pointer;transition:transform 0.1s;}
+.week-day:active{transform:scale(0.95);}
+.week-plan-badge{font-size:8px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(79,127,255,0.2);color:#7da8ff;margin-top:2px;}
+
+/* ── PLAN MODAL ── */
+.plan-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.plan-opt{padding:11px 8px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:500;font-family:var(--font);cursor:pointer;text-align:center;line-height:1.3;transition:all 0.15s;}
+.plan-opt.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.plan-opt small{display:block;font-size:10px;opacity:0.75;margin-top:2px;}
+.plan-warning{font-size:12px;color:var(--amber);background:rgba(245,166,35,0.1);border:0.5px solid rgba(245,166,35,0.25);border-radius:var(--radius-xs);padding:8px 10px;margin-top:10px;display:none;}
+.plan-warning.show{display:block;}
+.plan-save-btn{width:100%;margin-top:12px;padding:12px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
+
+/* ── PROGRESSION CHART ── */
+.prog-chart-wrap{display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);}
+.prog-chart-wrap.open{display:block;}
+.prog-chart-svg{width:100%;height:100px;display:block;}
+.prog-chart-pr{font-size:11px;color:var(--amber);font-family:var(--mono);margin-bottom:6px;font-weight:600;}
+.prog-ex-card{cursor:pointer;}
+.prog-ex-card:active{opacity:0.85;}
+
 /* FINALIZE BTN */
 .finalize-btn{width:100%;margin-top:10px;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
 </style>
@@ -335,6 +365,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           Importar backup
         </button>
         <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importBackup(event)">
+      </div>
+      <div class="streak-card" id="streak-card">
+        <div class="streak-flame">🔥</div>
+        <div class="streak-info">
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-lbl">dias consecutivos treinando</div>
+          <div class="streak-best" id="streak-best"></div>
+        </div>
       </div>
       <div class="home-metrics">
         <div class="metric-card">
@@ -364,7 +402,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
 
       <div class="week-card">
-        <div class="stit" style="margin-top:0;">Treinos da semana</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div class="stit" style="margin:0;">Treinos da semana</div>
+          <span style="font-size:11px;color:var(--text3);">toque para planejar</span>
+        </div>
         <div class="week-grid" id="home-week-grid"></div>
       </div>
 
@@ -489,6 +530,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <input class="search-inp" id="custom-ex-rest" placeholder="Descanso (ex.: 1,5 min)" autocomplete="off" style="margin-bottom:0;">
       <button class="btn-primary" style="margin-top:10px;" onclick="addCustomExerciseManual()">Adicionar ao treino</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ MODAL PLANEJAMENTO SEMANAL ══ -->
+<div class="modal-overlay" id="plan-modal" onclick="closePlanModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="plan-modal-title">Planejar dia</span>
+      <button class="modal-close" onclick="closePlanModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Escolha o treino para este dia da semana. Define o padrão recorrente.</p>
+    <div class="plan-modal-grid" id="plan-modal-grid"></div>
+    <div class="plan-warning" id="plan-warning">⚠️ Muitos dias seguidos de treino pesado. Considere um dia de descanso ou cardio leve.</div>
+    <button class="plan-save-btn" onclick="savePlanDay()">Salvar planejamento</button>
   </div>
 </div>
 
@@ -875,7 +930,7 @@ function renderHome(){
     if(isToday) stateClass+=' today';
     const icon=done?'✅':isRest?'😴':isToday?'⚡':isPast?'❌':'○';
     const shortLabel=isRest?'Descanso':(TREINOS[code]?.label||code);
-    days.push(`<div class="week-day${stateClass}">
+    days.push(`<div class="week-day${stateClass}" onclick="openPlanModal(${d.getDay()})">
       <div class="week-wk">${WEEKDAY_SHORT[d.getDay()]}</div>
       <div class="week-num">${String(d.getDate()).padStart(2,'0')}</div>
       <div class="week-icon">${icon}</div>
@@ -883,6 +938,7 @@ function renderHome(){
     </div>`);
   }
   grid.innerHTML=days.join('');
+  renderStreak();
 
   const monthTitle=document.getElementById('home-month-title');
   const monthGrid=document.getElementById('home-month-grid');
@@ -1399,9 +1455,41 @@ function deleteSession(sessionId){
   renderProgression();
 }
 
+function buildProgressionChart(records){
+  if(records.length<2) return '';
+  const weights=records.map(r=>parseFloat(r.peso||0)).filter(v=>v>0);
+  if(!weights.length) return '';
+  const min=Math.min(...weights), max=Math.max(...weights);
+  const range=max-min||1;
+  const W=300,H=80,PAD=6;
+  const pts=weights.map((w,i)=>{
+    const x=PAD+(i/(weights.length-1))*(W-PAD*2);
+    const y=H-PAD-((w-min)/range)*(H-PAD*2);
+    return {x,y,w};
+  });
+  const path=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
+  const prIdx=pts.reduce((bi,p,i)=>p.w>pts[bi].w?i:bi,0);
+  const dots=pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===prIdx?4:2.5}" fill="${i===prIdx?'#f5a623':'#4f7fff'}" opacity="${i===prIdx?1:0.7}"/>`).join('');
+  const labels=pts.map((p,i)=>{
+    if(i===0||i===pts.length-1||i===prIdx)
+      return `<text x="${p.x}" y="${p.y-7}" text-anchor="middle" font-size="9" fill="${i===prIdx?'#f5a623':'#8b92a8'}" font-family="monospace">${p.w}kg</text>`;
+    return '';
+  }).join('');
+  return `<svg class="prog-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <path d="${path}" fill="none" stroke="#4f7fff" stroke-width="1.5" stroke-linejoin="round"/>
+    ${dots}${labels}
+  </svg>`;
+}
+
+let openProgCard = null;
+
+function toggleProgCard(name){
+  openProgCard = openProgCard===name ? null : name;
+  renderProgression();
+}
+
 function renderProgression(){
   const el=document.getElementById('prog-list');
-  // Collect all exercises across history
   const exMap={};
   [...dedupeWorkoutHistory(workoutHistory)].reverse().forEach(s=>{
     s.exercicios.forEach(e=>{
@@ -1414,14 +1502,28 @@ function renderProgression(){
   });
   if(!Object.keys(exMap).length){el.innerHTML='<p class="empty">Treine para ver sua progressão aqui.</p>';return;}
   el.innerHTML=Object.entries(exMap).map(([name,records])=>{
+    const allWeights=records.map(r=>parseFloat(r.peso||0)).filter(v=>v>0);
+    const pr=allWeights.length?Math.max(...allWeights):null;
+    const isOpen=openProgCard===name;
     const rows=records.slice(-5).reverse().map((r,i)=>{
-      const isBest=i===0;
+      const isBest=pr&&parseFloat(r.peso||0)===pr;
       return `<div class="prog-row">
         <span class="prog-date">${r.date}</span>
-        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'} ${r.vol>0?`· vol ${r.vol}`:''}</span>
+        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}${isBest?' 🏆':''}</span>
       </div>`;
     }).join('');
-    return `<div class="prog-ex-card"><div class="prog-ex-name">${name}</div>${rows}</div>`;
+    const chart=buildProgressionChart(records);
+    return `<div class="prog-ex-card" onclick="toggleProgCard('${name.replace(/'/g,"\\'")}')">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="prog-ex-name" style="margin:0;">${name}</div>
+        <span style="font-size:11px;color:var(--text3);">${isOpen?'▲':'▼'} ${records.length} sessões</span>
+      </div>
+      ${pr?`<div class="prog-chart-pr">🏆 PR: ${pr}kg</div>`:''}
+      <div class="prog-chart-wrap${isOpen?' open':''}">
+        ${chart||'<p style="font-size:12px;color:var(--text3);padding:4px 0;">Mais registros para gerar gráfico</p>'}
+      </div>
+      ${rows}
+    </div>`;
   }).join('');
 }
 
@@ -1813,6 +1915,112 @@ function showToast(msg, duration=3000){
 }
 
 // ═══════════════════════════════════════════════════════════
+// STREAK
+// ═══════════════════════════════════════════════════════════
+function calcStreak(){
+  const sorted=[...workoutHistory]
+    .map(s=>s.selectedDateKey||s.date.replace(/\//g,'-'))
+    .filter(Boolean)
+    .map(k=>parseDateKey(k).getTime())
+    .filter((v,i,a)=>a.indexOf(v)===i)
+    .sort((a,b)=>b-a);
+  if(!sorted.length) return {current:0,best:0};
+  let current=0,best=0,streak=0;
+  const MS=86400000;
+  // Check if today or yesterday is in the list
+  const todayT=new Date(realToday.getFullYear(),realToday.getMonth(),realToday.getDate()).getTime();
+  let cursor=sorted[0]===todayT||sorted[0]===(todayT-MS) ? sorted[0] : null;
+  if(cursor){
+    for(const t of sorted){
+      if(cursor-t<=MS+1000){streak++;cursor=t-MS;}
+      else break;
+    }
+    current=streak;
+  }
+  // Best streak ever
+  streak=1;
+  for(let i=1;i<sorted.length;i++){
+    if(sorted[i-1]-sorted[i]<=MS+1000) streak++;
+    else streak=1;
+    if(streak>best) best=streak;
+  }
+  if(sorted.length===1) best=1;
+  return {current,best:Math.max(current,best)};
+}
+
+function renderStreak(){
+  const {current,best}=calcStreak();
+  document.getElementById('streak-num').textContent=String(current);
+  document.getElementById('streak-best').textContent=best>0?`Recorde: ${best} dias`:'';
+  const card=document.getElementById('streak-card');
+  card.style.display=current>0?'flex':'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+// WEEK PLANNING MODAL
+// ═══════════════════════════════════════════════════════════
+const PLAN_OPTIONS = [
+  {code:'UPPER_A',label:'Upper A',sub:'Força e Base'},
+  {code:'UPPER_B',label:'Upper B',sub:'Volume'},
+  {code:'LOWER_A',label:'Lower A',sub:'Base e Força'},
+  {code:'LOWER_B',label:'Lower B',sub:'Posterior'},
+  {code:'CARDIO',label:'Cardio',sub:'Zona 2'},
+  {code:'TREINO_LIVRE',label:'Livre',sub:'Monte do zero'},
+  {code:'DESCANSO',label:'Descanso',sub:'Recuperação'},
+];
+
+let planEditDay = null; // 0-6 weekday
+let planTempCode = null;
+
+function openPlanModal(weekday){
+  planEditDay = weekday;
+  planTempCode = weeklyPlan[weekday] || 'DESCANSO';
+  const dayNames=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  document.getElementById('plan-modal-title').textContent=`Planejar ${dayNames[weekday]}`;
+  renderPlanModalGrid();
+  document.getElementById('plan-modal').classList.add('open');
+}
+
+function closePlanModal(e){
+  if(e&&e.target!==document.getElementById('plan-modal')) return;
+  document.getElementById('plan-modal').classList.remove('open');
+}
+
+function renderPlanModalGrid(){
+  document.getElementById('plan-modal-grid').innerHTML=PLAN_OPTIONS.map(o=>`
+    <button class="plan-opt${planTempCode===o.code?' on':''}" onclick="selectPlanOpt('${o.code}')">
+      ${o.label}<small>${o.sub}</small>
+    </button>`).join('');
+  checkPlanWarning();
+}
+
+function selectPlanOpt(code){
+  planTempCode=code;
+  renderPlanModalGrid();
+}
+
+function checkPlanWarning(){
+  // Count consecutive heavy days if we apply this selection
+  const preview={...weeklyPlan,[planEditDay]:planTempCode};
+  let maxConsec=0,cur=0;
+  for(let i=0;i<14;i++){
+    const code=preview[i%7];
+    const heavy=['UPPER_A','UPPER_B','LOWER_A','LOWER_B'].includes(code);
+    if(heavy){cur++;maxConsec=Math.max(maxConsec,cur);}
+    else cur=0;
+  }
+  document.getElementById('plan-warning').classList.toggle('show',maxConsec>=3);
+}
+
+function savePlanDay(){
+  if(planEditDay===null) return;
+  weeklyPlan[planEditDay]=planTempCode;
+  sv('weeklyPlan',weeklyPlan);
+  document.getElementById('plan-modal').classList.remove('open');
+  renderHome();
+}
+
+// ═══════════════════════════════════════════════════════════
 // NAV
 // ═══════════════════════════════════════════════════════════
 function showScreen(id,btn){
@@ -1821,6 +2029,13 @@ function showScreen(id,btn){
   document.getElementById('sc-'+id).classList.add('on');
   btn.classList.add('on');
   if(id==='home') renderHome();
+  if(id==='treino'){
+    // Scroll timeline to today
+    const todayKey=dateKeyFromDate(isDateInTimeline(realToday)?realToday:TIMELINE_START);
+    requestAnimationFrame(()=>{
+      document.getElementById('tl-'+todayKey)?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    });
+  }
   if(id==='hist'){renderHistTabs();renderSessions();}
   if(id==='food') renderMealSections();
 }

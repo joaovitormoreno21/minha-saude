@@ -446,6 +446,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
       <div id="hist-progress" style="display:none;">
         <div class="stit">Evolução por exercício</div>
+        <div class="htabs" id="muscle-tabs"></div>
         <div id="prog-list"><p class="empty">Treine para ver sua progressão aqui.</p></div>
       </div>
     </div>
@@ -1455,40 +1456,61 @@ function deleteSession(sessionId){
   renderProgression();
 }
 
-function buildProgressionChart(records){
-  if(records.length<2) return '';
-  const weights=records.map(r=>parseFloat(r.peso||0)).filter(v=>v>0);
-  if(!weights.length) return '';
-  const min=Math.min(...weights), max=Math.max(...weights);
-  const range=max-min||1;
-  const W=300,H=80,PAD=6;
-  const pts=weights.map((w,i)=>{
-    const x=PAD+(i/(weights.length-1))*(W-PAD*2);
-    const y=H-PAD-((w-min)/range)*(H-PAD*2);
-    return {x,y,w};
-  });
-  const path=pts.map((p,i)=>i===0?`M${p.x},${p.y}`:`L${p.x},${p.y}`).join(' ');
-  const prIdx=pts.reduce((bi,p,i)=>p.w>pts[bi].w?i:bi,0);
-  const dots=pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="${i===prIdx?4:2.5}" fill="${i===prIdx?'#f5a623':'#4f7fff'}" opacity="${i===prIdx?1:0.7}"/>`).join('');
-  const labels=pts.map((p,i)=>{
-    if(i===0||i===pts.length-1||i===prIdx)
-      return `<text x="${p.x}" y="${p.y-7}" text-anchor="middle" font-size="9" fill="${i===prIdx?'#f5a623':'#8b92a8'}" font-family="monospace">${p.w}kg</text>`;
-    return '';
-  }).join('');
-  return `<svg class="prog-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <path d="${path}" fill="none" stroke="#4f7fff" stroke-width="1.5" stroke-linejoin="round"/>
-    ${dots}${labels}
-  </svg>`;
+// ── MUSCLE FILTER MAP ──
+const MUSCLE_TAGS = {
+  'Todos':    null,
+  'Bíceps':   ['bracos','biceps'],
+  'Costas':   ['costas','composto'],
+  'Ombro':    ['ombro'],
+  'Peito':    ['peito'],
+  'Perna':    ['principal','posterior','gluteo','isolado','finalizador','volume'],
+  'Tríceps':  ['bracos','triceps'],
+};
+
+let progMuscleFilter = 'Todos';
+
+function getExerciseTags(name){
+  // Try to match from EXERCISE_DB or TREINOS exs by name
+  const allExs = [
+    ...Object.values(TREINOS).flatMap(t=>t.exs||[]),
+    ...(savedExerciseLibrary||[]),
+  ];
+  const match = allExs.find(e=>(e.name||'').toLowerCase()===name.toLowerCase());
+  return match?.tags || [];
+}
+
+function exMatchesMuscle(name, muscle){
+  if(muscle==='Todos') return true;
+  const tags = getExerciseTags(name);
+  const allowed = MUSCLE_TAGS[muscle]||[];
+  // Also do a simple name-based fallback
+  const nameLow = name.toLowerCase();
+  if(muscle==='Bíceps' && (nameLow.includes('bícep')||nameLow.includes('bicep')||nameLow.includes('rosca'))) return true;
+  if(muscle==='Tríceps' && (nameLow.includes('trícep')||nameLow.includes('tricep')||nameLow.includes('pulley')||nameLow.includes('corda'))) return true;
+  if(muscle==='Costas' && (nameLow.includes('remada')||nameLow.includes('barra fixa')||nameLow.includes('puxada'))) return true;
+  if(muscle==='Ombro' && (nameLow.includes('elevação')||nameLow.includes('desenvolvimento'))) return true;
+  if(muscle==='Peito' && (nameLow.includes('supino')||nameLow.includes('chest')||nameLow.includes('crucifixo')||nameLow.includes('crossover')||nameLow.includes('flexão'))) return true;
+  if(muscle==='Perna' && (nameLow.includes('agachamento')||nameLow.includes('stiff')||nameLow.includes('leg')||nameLow.includes('flexora')||nameLow.includes('extensora')||nameLow.includes('panturrilha')||nameLow.includes('afundo')||nameLow.includes('abdutora'))) return true;
+  return tags.some(t=>allowed.includes(t));
+}
+
+function renderMuscleTabs(){
+  const muscles = Object.keys(MUSCLE_TAGS).sort((a,b)=> a==='Todos'?-1:b==='Todos'?1:a.localeCompare(b,'pt'));
+  document.getElementById('muscle-tabs').innerHTML = muscles.map(m=>
+    `<button class="htab${progMuscleFilter===m?' on':''}" onclick="filterMuscle('${m}')">${m}</button>`
+  ).join('');
+}
+
+function filterMuscle(m){
+  progMuscleFilter=m;
+  renderMuscleTabs();
+  renderProgression();
 }
 
 let openProgCard = null;
 
-function toggleProgCard(name){
-  openProgCard = openProgCard===name ? null : name;
-  renderProgression();
-}
-
 function renderProgression(){
+  renderMuscleTabs();
   const el=document.getElementById('prog-list');
   const exMap={};
   [...dedupeWorkoutHistory(workoutHistory)].reverse().forEach(s=>{
@@ -1496,31 +1518,38 @@ function renderProgression(){
       if(!e.series?.length) return;
       if(!exMap[e.name]) exMap[e.name]=[];
       const best=e.series.reduce((b,sr)=>parseFloat(sr.peso||0)>=parseFloat(b.peso||0)?sr:b,e.series[0]);
-      const vol=e.series.reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0).toFixed(0);
-      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps,vol});
+      const vol=e.series.reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0);
+      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps,vol:Math.round(vol)});
     });
   });
-  if(!Object.keys(exMap).length){el.innerHTML='<p class="empty">Treine para ver sua progressão aqui.</p>';return;}
-  el.innerHTML=Object.entries(exMap).map(([name,records])=>{
+
+  // Filter by muscle
+  const filtered=Object.entries(exMap)
+    .filter(([name])=>exMatchesMuscle(name,progMuscleFilter))
+    .sort(([a],[b])=>a.localeCompare(b,'pt'));
+
+  if(!filtered.length){
+    el.innerHTML='<p class="empty">Nenhum exercício encontrado.</p>';
+    return;
+  }
+
+  el.innerHTML=filtered.map(([name,records])=>{
     const allWeights=records.map(r=>parseFloat(r.peso||0)).filter(v=>v>0);
     const pr=allWeights.length?Math.max(...allWeights):null;
-    const isOpen=openProgCard===name;
-    const rows=records.slice(-5).reverse().map((r,i)=>{
-      const isBest=pr&&parseFloat(r.peso||0)===pr;
+    const rows=records.slice(-5).reverse().map(r=>{
+      const isPR=pr&&parseFloat(r.peso||0)===pr;
       return `<div class="prog-row">
         <span class="prog-date">${r.date}</span>
-        <span class="${isBest?'prog-best':'prog-val'}">${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}${isBest?' 🏆':''}</span>
+        <span class="${isPR?'prog-best':'prog-val'}">
+          ${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}${isPR?' 🏆':''}
+          ${r.vol>0?`<span style="color:var(--text3);font-size:10px;margin-left:4px;">vol ${r.vol}</span>`:''}
+        </span>
       </div>`;
     }).join('');
-    const chart=buildProgressionChart(records);
-    return `<div class="prog-ex-card" onclick="toggleProgCard('${name.replace(/'/g,"\\'")}')">
+    return `<div class="prog-ex-card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <div class="prog-ex-name" style="margin:0;">${name}</div>
-        <span style="font-size:11px;color:var(--text3);">${isOpen?'▲':'▼'} ${records.length} sessões</span>
-      </div>
-      ${pr?`<div class="prog-chart-pr">🏆 PR: ${pr}kg</div>`:''}
-      <div class="prog-chart-wrap${isOpen?' open':''}">
-        ${chart||'<p style="font-size:12px;color:var(--text3);padding:4px 0;">Mais registros para gerar gráfico</p>'}
+        ${pr?`<span style="font-size:11px;color:var(--amber);font-family:var(--mono);">PR ${pr}kg</span>`:''}
       </div>
       ${rows}
     </div>`;

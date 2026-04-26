@@ -302,6 +302,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ai-status{font-size:13px;color:var(--text2);text-align:center;padding:16px 0;display:none;}
 .ai-error{font-size:13px;color:var(--red);text-align:center;padding:8px 0;display:none;}
 
+
+
+/* ── COACH AI ── */
+.coach-ai-btn{width:100%;padding:14px 16px;background:linear-gradient(135deg,rgba(45,212,160,0.14),rgba(79,127,255,0.14));border:0.5px solid rgba(45,212,160,0.35);border-radius:var(--radius);font-size:14px;font-weight:700;color:var(--text);cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 12px;transition:all 0.15s;}
+.coach-ai-btn:active{opacity:0.82;transform:scale(0.99);}
+.coach-ai-btn svg{width:18px;height:18px;stroke:var(--accent2);flex-shrink:0;}
+.coach-status{font-size:13px;color:var(--text2);text-align:center;padding:18px 0;display:none;line-height:1.5;}
+.coach-error{font-size:13px;color:var(--red);text-align:center;padding:10px 0;display:none;line-height:1.5;}
+.coach-result{display:none;margin-top:12px;}
+.coach-summary{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:10px;white-space:pre-wrap;}
+.coach-plan-grid{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:10px;}
+.coach-plan-day{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.coach-plan-day-name{font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.coach-plan-day-workout{font-size:13px;color:var(--text);font-weight:600;text-align:right;}
+.coach-recs{background:rgba(79,127,255,0.08);border:0.5px solid rgba(79,127,255,0.22);border-radius:var(--radius-sm);padding:11px 12px;margin-bottom:10px;}
+.coach-rec{font-size:12px;color:var(--text2);line-height:1.45;margin-bottom:6px;}
+.coach-rec:last-child{margin-bottom:0;}
+.coach-apply-btn{width:100%;padding:12px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:8px;}
+.coach-raw{font-size:13px;color:var(--text2);line-height:1.5;white-space:pre-wrap;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;display:none;}
 /* ── BACKUP ── */
 .backup-row{display:flex;gap:8px;margin-bottom:12px;}
 .backup-btn{flex:1;padding:11px 8px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:6px;border:0.5px solid var(--border2);}
@@ -404,6 +423,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <button class="btn-primary" onclick="openTodayWorkout()">Ir para treino</button>
         </div>
       </div>
+
+      <button class="coach-ai-btn" onclick="openCoachModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.4 6.8L21 12l-6.6 3.2L12 22l-2.4-6.8L3 12l6.6-3.2L12 2z"/><path d="M5 4v4"/><path d="M3 6h4"/><path d="M19 16v4"/><path d="M17 18h4"/></svg>
+        Coach AI — planejar próxima semana
+      </button>
 
       <div class="week-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -566,6 +590,31 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <div class="plan-modal-grid" id="plan-modal-grid"></div>
     <div class="plan-warning" id="plan-warning">⚠️ Muitos dias seguidos de treino pesado. Considere um dia de descanso ou cardio leve.</div>
     <button class="plan-save-btn" onclick="savePlanDay()">Salvar planejamento</button>
+  </div>
+</div>
+
+<!-- ══ MODAL COACH AI ══ -->
+<div class="modal-overlay" id="coach-modal" onclick="closeCoachModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">🤖 Coach AI</span>
+      <button class="modal-close" onclick="closeCoachModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Vou analisar seu histórico, peso atual e planejamento para sugerir a melhor programação da próxima semana.</p>
+    <button class="ai-send-btn" id="coach-plan-btn" onclick="planNextWeekWithAI()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 6.8L21 12l-6.6 3.2L12 22l-2.4-6.8L3 12l6.6-3.2L12 2z"/></svg>
+      Planejar próxima semana
+    </button>
+    <div class="coach-status" id="coach-status">🤖 Analisando seus últimos treinos e montando o plano...</div>
+    <div class="coach-error" id="coach-error"></div>
+    <div class="coach-result" id="coach-result">
+      <div class="ai-result-title">Plano sugerido</div>
+      <div class="coach-summary" id="coach-summary"></div>
+      <div class="coach-plan-grid" id="coach-plan-grid"></div>
+      <div class="coach-recs" id="coach-recs"></div>
+      <button class="coach-apply-btn" id="coach-apply-btn" onclick="applyCoachPlanSuggestion()">Aplicar planejamento semanal</button>
+    </div>
+    <div class="coach-raw" id="coach-raw"></div>
   </div>
 </div>
 
@@ -1724,6 +1773,160 @@ function confirmAddFood(){
   renderMealSections();
 }
 
+
+// ═══════════════════════════════════════════════════════════
+// OPENAI PROXY / COACH AI
+// ═══════════════════════════════════════════════════════════
+const AI_PROXY_URL = 'https://bold-dust-a90f.joaovitormoreno21.workers.dev';
+let coachSuggestedPlan = null;
+
+async function callOpenAIProxy(messages){
+  const res = await fetch(AI_PROXY_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({messages})
+  });
+  const data = await res.json();
+  if(!res.ok || data.error){
+    throw new Error(data.error?.message || data.error || 'Erro ao conectar com a IA.');
+  }
+  const content = data.choices?.[0]?.message?.content;
+  if(!content) throw new Error('A IA não retornou conteúdo.');
+  return content.trim();
+}
+
+function openCoachModal(){
+  document.getElementById('coach-modal').classList.add('open');
+  document.getElementById('coach-status').style.display='none';
+  document.getElementById('coach-error').style.display='none';
+  document.getElementById('coach-result').style.display='none';
+  document.getElementById('coach-raw').style.display='none';
+  document.getElementById('coach-plan-btn').disabled=false;
+  coachSuggestedPlan=null;
+}
+
+function closeCoachModal(e){
+  if(e&&e.target!==document.getElementById('coach-modal')) return;
+  document.getElementById('coach-modal').classList.remove('open');
+}
+
+function buildCoachContext(){
+  const today = isDateInTimeline(realToday) ? realToday : TIMELINE_START;
+  const latestWeight = getLatestWeight();
+  const recentSessions = [...dedupeWorkoutHistory(workoutHistory)]
+    .slice(0,18)
+    .map(s=>({
+      date:s.selectedDateKey||s.date,
+      treino:s.label||s.treino,
+      exercicios:(s.exercicios||[]).map(e=>({
+        name:e.name,
+        feito:e.feito,
+        series:(e.series||[]).filter(sr=>sr.peso||sr.reps).map(sr=>({peso:sr.peso||'', reps:sr.reps||'', obs:sr.obs||''})),
+        volume:Math.round((e.series||[]).reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0))
+      }))
+    }));
+  const planReadable = Object.fromEntries(Object.entries(weeklyPlan).map(([day,code])=>{
+    const names=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    return [names[Number(day)], getPlanLabel(code)];
+  }));
+  return {
+    today: dateKeyFromDate(today),
+    currentWeight: latestWeight || null,
+    weeklyPlan: planReadable,
+    weeklyPlanCodes: weeklyPlan,
+    recentSessions,
+    availableCodes: Object.keys(TREINOS).concat(['DESCANSO']),
+    goal:'Hipertrofia com progressão controlada, preservando recuperação e consistência.'
+  };
+}
+
+async function planNextWeekWithAI(){
+  const btn=document.getElementById('coach-plan-btn');
+  const status=document.getElementById('coach-status');
+  const errorEl=document.getElementById('coach-error');
+  const result=document.getElementById('coach-result');
+  const rawEl=document.getElementById('coach-raw');
+  btn.disabled=true;
+  status.style.display='block';
+  errorEl.style.display='none';
+  result.style.display='none';
+  rawEl.style.display='none';
+  coachSuggestedPlan=null;
+
+  const context = buildCoachContext();
+  const systemPrompt = `Você é um Coach AI especialista em hipertrofia, periodização, recuperação e análise de histórico de treino.
+Seu trabalho é planejar a próxima semana do usuário com base no histórico real do app.
+Use somente estes códigos para os dias: UPPER_A, LOWER_A, UPPER_B, LOWER_B, CARDIO, TREINO_LIVRE, DESCANSO.
+Não prescreva medicamentos, hormônios ou condutas médicas.
+Priorize recuperação, progressão realista e consistência.
+Responda APENAS com JSON válido, sem markdown, no formato:
+{
+  "summary":"resumo curto em português",
+  "days":{"0":"DESCANSO","1":"UPPER_A","2":"LOWER_A","3":"DESCANSO","4":"UPPER_B","5":"LOWER_B","6":"TREINO_LIVRE"},
+  "recommendations":["recomendação 1","recomendação 2","recomendação 3"],
+  "notes":"observação curta"
+}
+Dia 0 é domingo, 1 segunda, 2 terça, 3 quarta, 4 quinta, 5 sexta, 6 sábado.`;
+
+  try{
+    const raw = await callOpenAIProxy([
+      {role:'system', content:systemPrompt},
+      {role:'user', content:'Contexto do usuário para planejar a próxima semana: '+JSON.stringify(context)}
+    ]);
+    let parsed;
+    try{
+      parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    }catch(e){
+      throw new Error('A IA respondeu, mas não no formato esperado. Resposta: '+raw.slice(0,500));
+    }
+    validateCoachPlan(parsed);
+    coachSuggestedPlan = parsed;
+    renderCoachPlanSuggestion(parsed);
+    status.style.display='none';
+    result.style.display='block';
+  }catch(err){
+    status.style.display='none';
+    errorEl.textContent='⚠️ '+(err.message||'Erro ao planejar a semana.');
+    errorEl.style.display='block';
+    btn.disabled=false;
+  }
+}
+
+function validateCoachPlan(plan){
+  const allowed=['UPPER_A','LOWER_A','UPPER_B','LOWER_B','CARDIO','TREINO_LIVRE','DESCANSO'];
+  if(!plan || typeof plan!=='object' || !plan.days) throw new Error('Plano inválido retornado pela IA.');
+  for(let i=0;i<=6;i++){
+    const code=plan.days[String(i)] || plan.days[i];
+    if(!allowed.includes(code)) throw new Error('A IA retornou um treino inválido: '+code);
+  }
+}
+
+function renderCoachPlanSuggestion(plan){
+  const dayNames=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  document.getElementById('coach-summary').textContent=(plan.summary||'Plano sugerido para a próxima semana.')+(plan.notes?`\n\n${plan.notes}`:'');
+  document.getElementById('coach-plan-grid').innerHTML=dayNames.map((name,i)=>{
+    const code=plan.days[String(i)] || plan.days[i];
+    return `<div class="coach-plan-day">
+      <div class="coach-plan-day-name">${name}</div>
+      <div class="coach-plan-day-workout">${getPlanLabel(code)}</div>
+    </div>`;
+  }).join('');
+  const recs=Array.isArray(plan.recommendations)?plan.recommendations:[];
+  document.getElementById('coach-recs').innerHTML=recs.length?recs.map(r=>`<div class="coach-rec">• ${r}</div>`).join(''):'<div class="coach-rec">Sem recomendações extras.</div>';
+  document.getElementById('coach-apply-btn').style.display='block';
+}
+
+function applyCoachPlanSuggestion(){
+  if(!coachSuggestedPlan?.days) return;
+  for(let i=0;i<=6;i++){
+    weeklyPlan[i]=coachSuggestedPlan.days[String(i)] || coachSuggestedPlan.days[i];
+  }
+  sv('weeklyPlan',weeklyPlan);
+  document.getElementById('coach-modal').classList.remove('open');
+  renderHome();
+  showToast('✅ Planejamento da semana aplicado!');
+}
+
 // ═══════════════════════════════════════════════════════════
 // IA ALIMENTAÇÃO
 // ═══════════════════════════════════════════════════════════
@@ -1787,23 +1990,10 @@ Responda APENAS com um JSON válido, sem texto adicional, sem markdown, sem expl
 }`;
 
   try {
-    const res = await fetch('https://bold-dust-a90f.joaovitormoreno21.workers.dev', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        messages: [
-          {role:'system', content: systemPrompt},
-          {role:'user', content: text}
-        ]
-      })
-    });
-
-    const data = await res.json();
-    if(!res.ok || data.error){
-      throw new Error(data.error?.message || data.error || 'Erro ao conectar com o proxy da IA.');
-    }
-    const raw = data.choices?.[0]?.message?.content?.trim();
-    if(!raw) throw new Error('A IA não retornou resposta.');
+    const raw = await callOpenAIProxy([
+      {role:'system', content:systemPrompt},
+      {role:'user', content:text}
+    ]);
 
     let parsed;
     try {

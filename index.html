@@ -248,6 +248,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ── HOME METRICS ── */
 .home-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .metric-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;}
+.metric-card.clickable{cursor:pointer;transition:background 0.15s;}
+.metric-card.clickable:active{background:var(--bg3);}
+.metric-edit-hint{font-size:10px;color:var(--text3);margin-top:5px;display:flex;align-items:center;gap:3px;}
 .metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
 .metric-value{font-size:22px;font-weight:600;font-family:var(--mono);}
 .metric-sub{font-size:12px;color:var(--text2);margin-top:4px;}
@@ -375,10 +378,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
         </div>
       </div>
       <div class="home-metrics">
-        <div class="metric-card">
+        <div class="metric-card clickable" onclick="openWeightModal()">
           <div class="metric-label">Peso atual</div>
           <div class="metric-value" id="home-weight">—</div>
           <div class="metric-sub" id="home-weight-sub">Sem registro</div>
+          <div class="metric-edit-hint">✏️ toque para registrar</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Treinos na semana</div>
@@ -531,6 +535,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <input class="search-inp" id="custom-ex-rest" placeholder="Descanso (ex.: 1,5 min)" autocomplete="off" style="margin-bottom:0;">
       <button class="btn-primary" style="margin-top:10px;" onclick="addCustomExerciseManual()">Adicionar ao treino</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ MODAL PESO CORPORAL ══ -->
+<div class="modal-overlay" id="weight-modal" onclick="closeWeightModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">⚖️ Registrar peso</span>
+      <button class="modal-close" onclick="closeWeightModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Digite seu peso de hoje em kg.</p>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+      <input class="qty-inp" type="number" id="weight-inp" placeholder="Ex: 78.5" step="0.1" min="30" max="250" style="flex:1;font-size:20px;padding:12px;">
+      <span style="font-size:15px;color:var(--text2);">kg</span>
+    </div>
+    <div id="weight-history-list" style="margin-bottom:12px;"></div>
+    <button class="plan-save-btn" onclick="saveWeight()">Salvar</button>
   </div>
 </div>
 
@@ -887,18 +908,37 @@ function openTodayWorkout(){
   const btn=[...document.querySelectorAll('.nb')].find(b=>b.textContent.includes('Treino'));
   if(btn) showScreen('treino', btn);
 }
-function updateCurrentWeight(){
+function openWeightModal(){
   const latest=getLatestWeight();
-  const current=latest?.weight || '';
-  const value=prompt('Digite seu peso atual em kg:', current);
-  if(value===null) return;
-  const num=parseFloat(String(value).replace(',','.'));
-  if(!num || num<=0) { alert('Digite um peso válido.'); return; }
+  document.getElementById('weight-inp').value=latest?latest.weight:'';
+  // Show last 5 entries
+  const recent=[...weightLog].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  document.getElementById('weight-history-list').innerHTML=recent.length
+    ?`<div class="stit" style="margin-top:0;margin-bottom:6px;">Últimos registros</div>`+
+      recent.map(w=>`<div class="prog-row">
+        <span class="prog-date">${w.date.replace(/-/g,'/')}</span>
+        <span class="prog-val">${String(w.weight).replace('.',',')} kg</span>
+      </div>`).join('')
+    :'';
+  document.getElementById('weight-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('weight-inp').focus(),200);
+}
+
+function closeWeightModal(e){
+  if(e&&e.target!==document.getElementById('weight-modal')) return;
+  document.getElementById('weight-modal').classList.remove('open');
+}
+
+function saveWeight(){
+  const val=parseFloat(String(document.getElementById('weight-inp').value).replace(',','.'));
+  if(!val||val<30||val>250){showToast('⚠️ Digite um peso válido');return;}
   const todayKey=dateKeyFromDate(realToday);
-  weightLog = Array.isArray(weightLog) ? weightLog.filter(w=>w.date!==todayKey) : [];
-  weightLog.push({date:todayKey, weight:num});
-  sv('weightLog', weightLog);
+  weightLog=Array.isArray(weightLog)?weightLog.filter(w=>w.date!==todayKey):[];
+  weightLog.push({date:todayKey,weight:val});
+  sv('weightLog',weightLog);
+  document.getElementById('weight-modal').classList.remove('open');
   renderHome();
+  showToast('✅ Peso registrado!');
 }
 function renderHome(){
   const now=isDateInTimeline(realToday) ? new Date(realToday) : TIMELINE_START;

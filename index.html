@@ -1787,18 +1787,23 @@ Responda APENAS com um JSON válido, sem texto adicional, sem markdown, sem expl
 }`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://bold-dust-a90f.joaovitormoreno21.workers.dev', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{role:'user', content: text}]
+        messages: [
+          {role:'system', content: systemPrompt},
+          {role:'user', content: text}
+        ]
       })
     });
+
     const data = await res.json();
-    const raw = data.content?.map(b=>b.text||'').join('').trim();
+    if(!res.ok || data.error){
+      throw new Error(data.error?.message || data.error || 'Erro ao conectar com o proxy da IA.');
+    }
+    const raw = data.choices?.[0]?.message?.content?.trim();
+    if(!raw) throw new Error('A IA não retornou resposta.');
 
     let parsed;
     try {

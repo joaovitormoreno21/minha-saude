@@ -805,42 +805,360 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 // DATA
 // ═══════════════════════════════════════════════════════════
 const TREINOS = {
-  UPPER_A:{label:'Upper A',sub:'Força e Base',icon:'💪',obj:'Compostos pesados, força e progressão de carga.',exs:[
-    {id:'UPPER_A_base_0',icon:'🏋️',name:'Supino inclinado halter',meta:'18x12 / 22x10 / 24x8-10 / 26x6',tags:['forca','progressao','peito'],rest:'2–3 min',defaultSeries:4},
-    {id:'UPPER_A_base_1',icon:'🦾',name:'Barra fixa (pronada)',meta:'8,5 / 6,5 / 4',tags:['costas','composto'],rest:'2 min',defaultSeries:3},
-    {id:'UPPER_A_base_2',icon:'🦾',name:'Remada máquina',meta:'60x10 / 80x9 / 80x8',tags:['costas'],rest:'1,5–2 min',defaultSeries:3},
-    {id:'UPPER_A_base_3',icon:'💪',name:'Elevação lateral',meta:'8x15 / 8x15',tags:['ombro'],rest:'1 min',defaultSeries:2},
-    {id:'UPPER_A_base_4',icon:'💪',name:'Chest press',meta:'40x10 / 50x10',tags:['peito'],rest:'1,5 min',defaultSeries:2},
-    {id:'UPPER_A_base_5',icon:'🔥',name:'Flexão',meta:'10 / 10',tags:['finalizador'],rest:'1 min',defaultSeries:2},
-  ]},
-  LOWER_A:{label:'Lower A',sub:'Base e Força',icon:'🦵',obj:'Agachamento como movimento principal.',exs:[
-    {id:'LOWER_A_base_0',icon:'🦵',name:'Agachamento',meta:'3x6-7',tags:['principal','forca'],rest:'2–3 min',defaultSeries:3},
-    {id:'LOWER_A_base_1',icon:'🦵',name:'Leg press',meta:'3x10',tags:['volume'],rest:'1,5–2 min',defaultSeries:3},
-    {id:'LOWER_A_base_2',icon:'🦵',name:'Flexora',meta:'2x12',tags:['posterior'],rest:'1–1,5 min',defaultSeries:2},
-    {id:'LOWER_A_base_3',icon:'🦵',name:'Panturrilha sentado',meta:'3x15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
-    {id:'LOWER_A_base_4',icon:'🦵',name:'Panturrilha em pé',meta:'3x15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
-  ]},
-  UPPER_B:{label:'Upper B',sub:'Volume e Pump',icon:'🏋️',obj:'Peito, costas e braços com volume moderado.',exs:[
-    {id:'UPPER_B_base_0',icon:'🏋️',name:'Supino reto halter',meta:'4 séries (progressão)',tags:['peito','progressao'],rest:'1,5–2 min',defaultSeries:4},
-    {id:'UPPER_B_base_1',icon:'🦾',name:'Barra fixa',meta:'3 séries',tags:['costas','composto'],rest:'2 min',defaultSeries:3},
-    {id:'UPPER_B_base_2',icon:'🦾',name:'Remada',meta:'3x8-10',tags:['costas'],rest:'1,5 min',defaultSeries:3},
-    {id:'UPPER_B_base_3',icon:'💪',name:'Crossover',meta:'2x12-15',tags:['peito'],rest:'1 min',defaultSeries:2},
-    {id:'UPPER_B_base_4',icon:'💪',name:'Elevação lateral',meta:'2-3x12-15',tags:['ombro'],rest:'1 min',defaultSeries:3},
-    {id:'UPPER_B_base_5',icon:'💪',name:'Rosca bíceps',meta:'2x10',tags:['bracos'],rest:'1 min',defaultSeries:2},
-    {id:'UPPER_B_base_6',icon:'💪',name:'Tríceps pulley',meta:'2x10',tags:['bracos'],rest:'1 min',defaultSeries:2},
-  ]},
-  LOWER_B:{label:'Lower B',sub:'Posterior e Base',icon:'🦵',obj:'Foco em posterior e estabilidade.',exs:[
-    {id:'LOWER_B_base_0',icon:'🦵',name:'Stiff',meta:'3x6-8',tags:['posterior','principal'],rest:'2 min',defaultSeries:3},
-    {id:'LOWER_B_base_1',icon:'🦵',name:'Leg press',meta:'2x10',tags:['volume'],rest:'1,5–2 min',defaultSeries:2},
-    {id:'LOWER_B_base_2',icon:'🦵',name:'Flexora unilateral',meta:'2x10-12',tags:['posterior'],rest:'1–1,5 min',defaultSeries:2},
-    {id:'LOWER_B_base_3',icon:'🦵',name:'Panturrilha sentado',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
-    {id:'LOWER_B_base_4',icon:'🦵',name:'Panturrilha em pé',meta:'3x12-15',tags:['finalizador'],rest:'1 min',defaultSeries:3},
-  ]},
-  TREINO_LIVRE:{label:'Treino Livre',sub:'Monte do zero',icon:'🧩',obj:'Crie um treino do zero adicionando os exercícios que quiser.',exs:[]},
-  CARDIO:{label:'Cardio',sub:'Corrida / Bicicleta',icon:'🚴',obj:'Registre tipo, tempo e distância do cardio.',exs:[
-    {id:'CARDIO_base_0',icon:'🏃',name:'Corrida',meta:'Tempo e distância',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
-    {id:'CARDIO_base_1',icon:'🚴',name:'Bicicleta',meta:'Tempo e distância',tags:['cardio'],rest:'—',defaultSeries:1,inputMode:'cardio'},
-  ]},
+
+  UPPER_A:{
+    label:'Upper A',
+    sub:'Força',
+    icon:'💪',
+    obj:'Progressão de carga nos compostos.',
+    exs:[
+
+      {
+        id:'UPPER_A_0',
+        icon:'🏋️',
+        name:'Supino inclinado halter',
+        meta:'16x15 / 20x10 / 26x6-8 / 26x6-8 / 24x8-10',
+        tags:['peito','forca'],
+        rest:'2–3 min',
+        defaultSeries:5
+      },
+
+      {
+        id:'UPPER_A_1',
+        icon:'🦾',
+        name:'Barra fixa pronada',
+        meta:'4x6-8 (meta 8/8/8/8)',
+        tags:['costas'],
+        rest:'2 min',
+        defaultSeries:4
+      },
+
+      {
+        id:'UPPER_A_2',
+        icon:'🦾',
+        name:'Remada máquina',
+        meta:'60x10 / 65x8 / 65x8',
+        tags:['costas'],
+        rest:'2 min',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_A_3',
+        icon:'💪',
+        name:'Chest Press',
+        meta:'55x10 / 60x8 / 60x8',
+        tags:['peito'],
+        rest:'90 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_A_4',
+        icon:'💪',
+        name:'Elevação lateral',
+        meta:'10x15 / 10x12 + DROP',
+        tags:['ombro'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'UPPER_A_5',
+        icon:'🦾',
+        name:'Face Pull',
+        meta:'3x15',
+        tags:['ombro'],
+        rest:'60 s',
+        defaultSeries:3
+      }
+
+    ]
+  },
+
+
+
+  LOWER_A:{
+    label:'Lower A',
+    sub:'Quadríceps',
+    icon:'🦵',
+    obj:'Força sem sobrecarregar o joelho.',
+    exs:[
+
+      {
+        id:'LOWER_A_0',
+        icon:'🦵',
+        name:'Agachamento Smith',
+        meta:'20x12 / 30x10 / 35x8',
+        tags:['principal'],
+        rest:'2–3 min',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_A_1',
+        icon:'🦵',
+        name:'Leg Press',
+        meta:'100x12 / 120x10 / 120x10',
+        tags:['quadriceps'],
+        rest:'2 min',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_A_2',
+        icon:'🦵',
+        name:'Extensora',
+        meta:'55x12 / 60x10 / 60x10',
+        tags:['quadriceps'],
+        rest:'90 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_A_3',
+        icon:'🦵',
+        name:'Flexora unilateral',
+        meta:'12,5x12 / 15x10 / 15x10',
+        tags:['posterior'],
+        rest:'90 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_A_4',
+        icon:'🦵',
+        name:'Panturrilha sentado',
+        meta:'40x12 / 40x12 / 40x12',
+        tags:['panturrilha'],
+        rest:'60 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_A_5',
+        icon:'🦵',
+        name:'Panturrilha em pé',
+        meta:'45x12 / 45x12',
+        tags:['panturrilha'],
+        rest:'60 s',
+        defaultSeries:2
+      }
+
+    ]
+  },
+
+
+
+  UPPER_B:{
+    label:'Upper B',
+    sub:'Hipertrofia',
+    icon:'🏋️',
+    obj:'Volume moderado com foco estético.',
+    exs:[
+
+      {
+        id:'UPPER_B_0',
+        icon:'🏋️',
+        name:'Supino reto máquina',
+        meta:'15x12 / 20x10 / 25x8 / 25x8',
+        tags:['peito'],
+        rest:'2 min',
+        defaultSeries:4
+      },
+
+      {
+        id:'UPPER_B_1',
+        icon:'🦾',
+        name:'Puxada alta na polia',
+        meta:'45x12 / 52x10 / 55x8',
+        tags:['costas'],
+        rest:'2 min',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_B_2',
+        icon:'🦾',
+        name:'Remada máquina',
+        meta:'45x10 / 50x10 / 50x10',
+        tags:['costas'],
+        rest:'90 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_B_3',
+        icon:'💪',
+        name:'Crossover',
+        meta:'20x15 / 25x12 / 25x12',
+        tags:['peito'],
+        rest:'60 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_B_4',
+        icon:'💪',
+        name:'Elevação lateral',
+        meta:'10x15 / 10x15 + DROP',
+        tags:['ombro'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'UPPER_B_5',
+        icon:'💪',
+        name:'Rosca Scott',
+        meta:'40x10 / 40x10 / 35x12',
+        tags:['biceps'],
+        rest:'60 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_B_6',
+        icon:'💪',
+        name:'Rosca inclinada',
+        meta:'12kg x12 / x12',
+        tags:['biceps'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'UPPER_B_7',
+        icon:'💪',
+        name:'Tríceps pulley',
+        meta:'40x10 / 40x10 / 35x12',
+        tags:['triceps'],
+        rest:'60 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'UPPER_B_8',
+        icon:'💪',
+        name:'Tríceps francês unilateral',
+        meta:'10kg x12 / x12',
+        tags:['triceps'],
+        rest:'60 s',
+        defaultSeries:2
+      }
+
+    ]
+  },
+
+
+
+  LOWER_B:{
+    label:'Lower B',
+    sub:'Posterior',
+    icon:'🦵',
+    obj:'Posterior forte e joelho saudável.',
+    exs:[
+
+      {
+        id:'LOWER_B_0',
+        icon:'🦵',
+        name:'Stiff',
+        meta:'60x10 / 70x8 / 70x8',
+        tags:['posterior'],
+        rest:'2–3 min',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_B_1',
+        icon:'🦵',
+        name:'Mesa flexora',
+        meta:'35x12 / 35x12 / 40x10',
+        tags:['posterior'],
+        rest:'90 s',
+        defaultSeries:3
+      },
+
+      {
+        id:'LOWER_B_2',
+        icon:'🦵',
+        name:'Abdutora',
+        meta:'50x15 / 55x15',
+        tags:['gluteo'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'LOWER_B_3',
+        icon:'🦵',
+        name:'Adutora',
+        meta:'45x15 / 50x15',
+        tags:['adutores'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'LOWER_B_4',
+        icon:'🦵',
+        name:'Panturrilha sentado',
+        meta:'40x15 / 40x15',
+        tags:['panturrilha'],
+        rest:'60 s',
+        defaultSeries:2
+      },
+
+      {
+        id:'LOWER_B_5',
+        icon:'🦵',
+        name:'Panturrilha em pé',
+        meta:'45x15 / 45x15',
+        tags:['panturrilha'],
+        rest:'60 s',
+        defaultSeries:2
+      }
+
+    ]
+  },
+
+  TREINO_LIVRE:{
+    label:'Treino Livre',
+    sub:'Monte do zero',
+    icon:'🧩',
+    obj:'Crie um treino personalizado.',
+    exs:[]
+  },
+
+  CARDIO:{
+    label:'Cardio',
+    sub:'Zona 2',
+    icon:'🏃',
+    obj:'20–30 minutos. FC alvo 130–150 bpm.',
+    exs:[
+      {
+        id:'CARDIO_0',
+        icon:'🏃',
+        name:'Corrida',
+        meta:'20–30 min',
+        tags:['cardio'],
+        rest:'—',
+        defaultSeries:1,
+        inputMode:'cardio'
+      },
+      {
+        id:'CARDIO_1',
+        icon:'🚴',
+        name:'Bicicleta',
+        meta:'20–40 min',
+        tags:['cardio'],
+        rest:'—',
+        defaultSeries:1,
+        inputMode:'cardio'
+      }
+    ]
+  }
+
 };
 
 const EXERCISE_DB = [

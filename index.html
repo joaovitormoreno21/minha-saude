@@ -3369,7 +3369,7 @@ renderCoachChat();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCiVF1AfxBmXeF5YvdrxbsMW-Qb2oCeb9g",
@@ -3386,9 +3386,11 @@ await setPersistence(auth, browserLocalPersistence);
 const db = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({prompt:'select_account'});
-let currentUser=null, applyingRemote=false, unsubscribe=null;
-const timers=new Map();
-const exact=new Set(['workoutHistory','weightLog','weeklyPlan','savedExerciseLibrary','coachMemory','coachChatHistory','checkinLog','selectedDateKey']);
+let currentUser=null, applyingRemote=false;
+const pendingWrites=new Map();
+let flushTimer=null;
+let isFlushing=false;
+const exact=new Set(['workoutHistory','weightLog','weeklyPlan','savedExerciseLibrary','coachMemory','coachChatHistory','checkinLog']);
 const prefixes=['foodLog_','activeTreino_','exChecked_','exSeries_','customExercises_','hiddenExercises_'];
 const shouldSync=k=>exact.has(k)||prefixes.some(p=>k.startsWith(p));
 const safeId=k=>encodeURIComponent(k).replaceAll('%','_');
@@ -3421,20 +3423,42 @@ async function downloadAll(){
  localStorage.setItem('__firebaseMigrated_'+currentUser.uid,'1');window.refreshAppFromStorage?.();return snap.size;
 }
 async function initialSync(){
- status('sincronizando','Comparando os dados locais com a nuvem...','amber');
- const snap=await getDocs(col(currentUser.uid));
- if(snap.empty){await uploadAll();}
- else if(!localStorage.getItem('__firebaseMigrated_'+currentUser.uid)&&localEntries().length){
-   const cloud=confirm('Há dados neste aparelho e na nuvem.\n\nOK: baixar os dados da nuvem.\nCancelar: enviar os dados deste aparelho.');
-   if(cloud){const n=await downloadAll();status('sincronizado',n+' registros baixados.','green');}else await uploadAll();
- }else{const n=await downloadAll();status('sincronizado',n+' registros sincronizados.','green');}
- unsubscribe?.();unsubscribe=onSnapshot(col(currentUser.uid),snap=>{
-   let changed=false;applyingRemote=true;try{snap.docChanges().forEach(c=>{if(c.type==='removed')return;const x=c.doc.data();if(x?.key&&shouldSync(x.key)){localStorage.setItem(x.key,JSON.stringify(x.value));changed=true;}});}finally{applyingRemote=false;}
-   if(changed){window.refreshAppFromStorage?.();status('atualizado','Dados atualizados pela nuvem.','green');}
- },e=>{console.error(e);status('offline','Sem conexão. Os dados continuam salvos localmente.','amber');});
+  // O localStorage continua sendo a fonte principal. Ao conectar, apenas fazemos backup.
+  // Não há listener em tempo real nem recarga automática da interface.
+  status('sincronizando','Criando backup inicial na nuvem...','amber');
+  await uploadAll();
+  status('sincronizado','Backup automático ativo.','green');
 }
+
+async function flushPendingWrites(){
+  if(isFlushing || !currentUser || pendingWrites.size===0) return;
+  isFlushing=true;
+  const entries=[...pendingWrites.entries()];
+  pendingWrites.clear();
+  try{
+    status('salvando','Salvando alterações na nuvem...','amber');
+    for(let i=0;i<entries.length;i+=20){
+      await Promise.all(entries.slice(i,i+20).map(([k,v])=>write(currentUser.uid,k,v)));
+    }
+    status('sincronizado','Última sincronização: '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),'green');
+  }catch(e){
+    console.error(e);
+    entries.forEach(([k,v])=>pendingWrites.set(k,v));
+    status('offline','Falha na nuvem; dados preservados neste aparelho.','amber');
+  }finally{
+    isFlushing=false;
+    if(pendingWrites.size){
+      clearTimeout(flushTimer);
+      flushTimer=setTimeout(flushPendingWrites,3000);
+    }
+  }
+}
+
 window.firebaseSave=(k,v)=>{
- if(applyingRemote||!currentUser||!shouldSync(k))return;clearTimeout(timers.get(k));timers.set(k,setTimeout(async()=>{try{status('salvando','Salvando na nuvem...','amber');await write(currentUser.uid,k,v);status('sincronizado','Última sincronização: '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),'green');}catch(e){console.error(e);status('offline','Falha na nuvem; salvo neste aparelho.','amber');}},800));
+  if(applyingRemote||!currentUser||!shouldSync(k)) return;
+  pendingWrites.set(k,v);
+  clearTimeout(flushTimer);
+  flushTimer=setTimeout(flushPendingWrites,3000);
 };
 window.firebaseLogin=async()=>{
  try{
@@ -3459,8 +3483,8 @@ onAuthStateChanged(auth,async user=>{
    status('conectado','Conta Google autenticada. Verificando a nuvem...','green');
    try{await initialSync();}catch(e){console.error(e);status('erro',e.message||'Erro de sincronização.','red');}
  }else{
-   unsubscribe?.();
-   unsubscribe=null;
+   pendingWrites.clear();
+   clearTimeout(flushTimer);
  }
 });
 </script>

@@ -3368,7 +3368,7 @@ renderCoachChat();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -3382,6 +3382,7 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
+await setPersistence(auth, browserLocalPersistence);
 const db = getFirestore(firebaseApp);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({prompt:'select_account'});
@@ -3435,11 +3436,33 @@ async function initialSync(){
 window.firebaseSave=(k,v)=>{
  if(applyingRemote||!currentUser||!shouldSync(k))return;clearTimeout(timers.get(k));timers.set(k,setTimeout(async()=>{try{status('salvando','Salvando na nuvem...','amber');await write(currentUser.uid,k,v);status('sincronizado','Última sincronização: '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),'green');}catch(e){console.error(e);status('offline','Falha na nuvem; salvo neste aparelho.','amber');}},800));
 };
-window.firebaseLogin=async()=>{try{const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||matchMedia('(display-mode: standalone)').matches;if(mobile)await signInWithRedirect(auth,provider);else await signInWithPopup(auth,provider);}catch(e){console.error(e);status('erro',e.message||'Erro no login.','red');}};
+window.firebaseLogin=async()=>{
+ try{
+   status('conectando','Abrindo login do Google...','amber');
+   await setPersistence(auth,browserLocalPersistence);
+   await signInWithPopup(auth,provider);
+ }catch(e){
+   console.error(e);
+   if(['auth/popup-blocked','auth/cancelled-popup-request','auth/operation-not-supported-in-this-environment'].includes(e.code)){
+     try{await signInWithRedirect(auth,provider);return;}catch(e2){console.error(e2);status('erro',e2.message||'Erro no login.','red');return;}
+   }
+   if(e.code!=='auth/popup-closed-by-user')status('erro',e.message||'Erro no login.','red');
+ }
+};
 window.firebaseLogout=()=>signOut(auth);
 window.firebaseSyncNow=async()=>{if(!currentUser)return window.firebaseLogin();try{await uploadAll();window.showToast?.('☁️ Sincronização concluída!');}catch(e){console.error(e);status('erro','Erro ao sincronizar.','red');}};
 try{await getRedirectResult(auth);}catch(e){console.error(e);}
-onAuthStateChanged(auth,async user=>{currentUser=user;authUI(user);if(user){try{await initialSync();}catch(e){console.error(e);status('erro',e.message||'Erro de sincronização.','red');}}else unsubscribe?.();});
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
+ authUI(user);
+ if(user){
+   status('conectado','Conta Google autenticada. Verificando a nuvem...','green');
+   try{await initialSync();}catch(e){console.error(e);status('erro',e.message||'Erro de sincronização.','red');}
+ }else{
+   unsubscribe?.();
+   unsubscribe=null;
+ }
+});
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error));}

@@ -368,8 +368,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .coach-rec:last-child{margin-bottom:0;}
 .coach-apply-btn{width:100%;padding:12px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:8px;}
 .coach-raw{font-size:13px;color:var(--text2);line-height:1.5;white-space:pre-wrap;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;display:none;}
-.coach-page-head{background:linear-gradient(135deg,rgba(45,212,160,.12),rgba(79,127,255,.10));border:.5px solid rgba(45,212,160,.25);border-radius:var(--radius);padding:15px;margin-bottom:12px}
-.coach-page-title{font-size:18px;font-weight:700;margin-bottom:4px}.coach-page-sub{font-size:12px;color:var(--text2);line-height:1.45}
+.coach-page-head{padding:2px 2px 10px;margin-bottom:0;}
+.coach-page-title{font-size:19px;font-weight:700;margin-bottom:3px;font-family:var(--display);}
+.coach-page-sub{font-size:12px;color:var(--text2);line-height:1.4}
+.coach-insight-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-family:var(--mono);background:var(--bg2);border:0.5px solid var(--border);border-radius:999px;padding:9px 14px;margin-bottom:10px;overflow-x:auto;white-space:nowrap;}
+.coach-insight-dot{color:var(--text3);}
+.coach-pill-row{display:flex;gap:8px;margin-bottom:10px;}
+.coach-pill{padding:8px 14px;border-radius:999px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+.coach-quick-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;scrollbar-width:none;}
+.coach-quick-scroll::-webkit-scrollbar{display:none;}
+.coach-chip{flex-shrink:0;padding:8px 13px;border-radius:999px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;}
+.coach-chip:active{background:var(--bg4);}
+.coach-chat-card-tall .coach-chat{max-height:58dvh;}
 .coach-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.coach-quick{padding:11px 10px;border-radius:var(--radius-sm);border:.5px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);text-align:left;line-height:1.25}.coach-quick small{display:block;color:var(--text3);font-size:10px;font-weight:500;margin-top:3px}
 .coach-chat-card{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px}.coach-chat{display:flex;flex-direction:column;gap:8px;max-height:48dvh;overflow-y:auto;padding:2px 0 10px}.coach-msg{padding:10px 11px;border-radius:12px;font-size:13px;line-height:1.48;white-space:pre-wrap}.coach-msg.user{align-self:flex-end;background:var(--accent);color:var(--accent-ink);max-width:88%}.coach-msg.ai{align-self:flex-start;background:var(--bg3);border:.5px solid var(--border2);color:var(--text2);max-width:94%}
 .coach-action-box{background:rgba(45,212,160,.09);border:.5px solid rgba(45,212,160,.25);border-radius:var(--radius-sm);padding:10px}.coach-action-btn{width:100%;padding:10px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:700;cursor:pointer}.coach-input-row{display:flex;gap:8px;align-items:flex-end;margin-top:8px}.coach-input{flex:1;min-height:44px;max-height:120px;padding:11px 12px;border:.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;resize:none;outline:none;line-height:1.4}.coach-send{width:46px;height:44px;border:none;border-radius:var(--radius-sm);background:var(--accent2);color:#0a1a14;font-size:18px;font-weight:800;cursor:pointer}.coach-send:disabled{opacity:.55}
@@ -596,37 +606,28 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
     <!-- ══ COACH AI ══ -->
     <div class="screen" id="sc-coach">
-      <div class="coach-page-head"><div class="coach-page-title">🤖 Coach AI</div><div class="coach-page-sub">Tire dúvidas sobre treinos, peça ajustes e aplique ações no app com confirmação.</div></div>
-      <div class="coach-memory-card">
-        <div class="coach-memory-top">
-          <div>
-            <div class="coach-memory-title">Memória inteligente</div>
-            <div class="coach-memory-sub">Contexto fixo + dados dinâmicos do app enviados em toda conversa.</div>
-          </div>
-          <button class="coach-memory-btn" onclick="openCoachMemoryModal()">Editar</button>
-        </div>
-        <div class="coach-memory-list" id="coach-memory-list"></div>
+      <div class="coach-page-head">
+        <div class="coach-page-title">Coach AI</div>
+        <div class="coach-page-sub">Tire dúvidas, peça ajustes e aplique ações no app com confirmação.</div>
       </div>
-      <div class="coach-checkin-card">
-        <div class="coach-checkin-head">
-          <div>
-            <div class="coach-checkin-title">Check-in rápido de hoje</div>
-            <div class="coach-checkin-sub">20 segundos: isso vira contexto automático para ajustar treino, volume e descanso.</div>
-          </div>
-          <button class="coach-memory-btn" onclick="runCoachQuick('checkin')">Analisar</button>
-        </div>
-        <div class="coach-checkin-grid" id="coach-checkin-grid"></div>
-        <div class="coach-context-mini" id="coach-context-mini"></div>
+
+      <div class="coach-insight-bar" id="coach-insight-bar"></div>
+
+      <div class="coach-pill-row">
+        <button class="coach-pill" onclick="openCoachMemoryModal()">🧠 Memória</button>
+        <button class="coach-pill" onclick="openCoachCheckinModal()">📋 Check-in</button>
       </div>
-      <div class="coach-quick-grid">
-        <button class="coach-quick" onclick="runCoachQuick('plan_week')">Planejar próxima semana<small>baseado no histórico</small></button>
-        <button class="coach-quick" onclick="runCoachQuick('today')">Treino de hoje<small>cargas e foco</small></button>
-        <button class="coach-quick" onclick="runCoachQuick('fatigue')">Estou cansado<small>treino ou descanso?</small></button>
-        <button class="coach-quick" onclick="runCoachQuick('progress')">Analisar progressão<small>pontos fortes/fracos</small></button>
-        <button class="coach-quick" onclick="runCoachQuick('review_loads')">Revisar cargas<small>progredir ou manter</small></button>
-        <button class="coach-quick" onclick="runCoachQuick('weekly_summary')">Resumo semanal<small>salvar aprendizado</small></button>
+
+      <div class="coach-quick-scroll" id="coach-quick-scroll">
+        <button class="coach-chip" onclick="runCoachQuick('plan_week')">Planejar semana</button>
+        <button class="coach-chip" onclick="runCoachQuick('today')">Treino de hoje</button>
+        <button class="coach-chip" onclick="runCoachQuick('fatigue')">Estou cansado</button>
+        <button class="coach-chip" onclick="runCoachQuick('progress')">Progressão</button>
+        <button class="coach-chip" onclick="runCoachQuick('review_loads')">Revisar cargas</button>
+        <button class="coach-chip" onclick="runCoachQuick('weekly_summary')">Resumo semanal</button>
       </div>
-      <div class="coach-chat-card">
+
+      <div class="coach-chat-card coach-chat-card-tall">
         <div class="coach-chat" id="coach-chat"></div>
         <div class="coach-attachment" id="coach-attachment-preview">
           <img id="coach-attachment-img" alt="Imagem anexada">
@@ -637,12 +638,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <button class="coach-attachment-del" onclick="clearCoachImageAttachment()">×</button>
         </div>
         <div class="coach-input-row">
-          <textarea class="coach-input" id="coach-input" placeholder="Ex: hoje faço Upper B ou descanso? / envie foto do treino, exame ou equipamento e pergunte algo"></textarea>
+          <textarea class="coach-input" id="coach-input" placeholder="Ex: hoje faço Upper B ou descanso?"></textarea>
           <button class="coach-send" id="coach-send" onclick="sendCoachChat()">➤</button>
         </div>
         <div class="coach-tools">
           <button class="coach-tool-btn" id="coach-mic-btn" onclick="toggleCoachMic()">🎙️ Falar</button>
-          <button class="coach-tool-btn" onclick="document.getElementById('coach-image-input').click()">📷 Enviar foto</button>
+          <button class="coach-tool-btn" onclick="document.getElementById('coach-image-input').click()">📷 Foto</button>
           <input type="file" id="coach-image-input" accept="image/*" style="display:none" onchange="handleCoachImageUpload(event)">
         </div>
       </div>
@@ -779,6 +780,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
     <div id="weight-history-list" style="margin-bottom:12px;"></div>
     <button class="plan-save-btn" onclick="saveWeight()">Salvar</button>
+  </div>
+</div>
+
+<!-- ══ MODAL CHECK-IN COACH ══ -->
+<div class="modal-overlay" id="checkin-modal" onclick="closeCheckinModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">📋 Check-in de hoje</span>
+      <button class="modal-close" onclick="closeCheckinModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.45;">20 segundos: isso vira contexto automático para o Coach ajustar treino, volume e descanso.</p>
+    <div class="coach-checkin-grid" id="coach-checkin-grid"></div>
+    <div class="coach-context-mini" id="coach-context-mini"></div>
   </div>
 </div>
 
@@ -2559,6 +2573,23 @@ function calcReadinessScore(checkin=getTodayCheckin()){
   return n?Math.round((score/(n*2))*100):null;
 }
 function getReadinessLabel(score){ if(score===null) return 'sem check-in'; if(score>=75) return 'bom para progredir'; if(score>=45) return 'moderado/controle'; return 'reduzir volume'; }
+function openCoachCheckinModal(){
+  document.getElementById('checkin-modal').classList.add('open');
+  renderDailyCheckIn();
+}
+function closeCheckinModal(e){
+  if(e && e.target !== document.getElementById('checkin-modal')) return;
+  document.getElementById('checkin-modal').classList.remove('open');
+}
+function renderCoachInsightBar(){
+  const el=document.getElementById('coach-insight-bar'); if(!el) return;
+  const score=calcReadinessScore();
+  const streak=calcStreak();
+  const today=isDateInTimeline(realToday)?realToday:TIMELINE_START;
+  const label=getPlanLabel(getPlanCodeForDate(today));
+  const scoreTxt = score===null ? 'sem check-in' : `prontidão ${score}%`;
+  el.innerHTML = `<span>🔥 ${streak.current}d</span><span class="coach-insight-dot">·</span><span>${scoreTxt}</span><span class="coach-insight-dot">·</span><span>hoje: ${escapeHtml(label)}</span>`;
+}
 function renderCoachContextMini(){
   const el=document.getElementById('coach-context-mini'); if(!el) return;
   const score=calcReadinessScore(); const recent=[...dedupeWorkoutHistory(workoutHistory)].slice(0,14); const today=isDateInTimeline(realToday)?realToday:TIMELINE_START;
@@ -3447,7 +3478,7 @@ function showScreen(id,btn){
     renderMealSections();
     if(document.getElementById('food-view-supplements').style.display!=='none') renderSupplements();
   }
-  if(id==='coach'){ renderCoachMemoryCard(); renderDailyCheckIn(); renderCoachChat(); }
+  if(id==='coach'){ renderCoachMemoryCard(); renderDailyCheckIn(); renderCoachChat(); renderCoachInsightBar(); }
 }
 
 // Atualiza o estado do app após receber dados do Firebase, sem recarregar a página.

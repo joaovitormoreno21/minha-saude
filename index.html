@@ -221,6 +221,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .view-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all 0.15s;}
 .view-tab.on{background:var(--bg4);color:var(--text);border-color:var(--border3);}
 
+/* ── SUPLEMENTOS ── */
+.supp-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;}
+.supp-item.done{opacity:0.55;}
+.supp-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:none;transition:all 0.15s;}
+.supp-check.done{background:var(--accent);border-color:var(--accent);}
+.supp-check svg{width:12px;height:12px;stroke:var(--accent-ink);display:none;}
+.supp-check.done svg{display:block;}
+.supp-info{flex:1;min-width:0;}
+.supp-name{font-size:14px;font-weight:500;margin-bottom:3px;}
+.supp-dose{font-size:12px;color:var(--text2);line-height:1.4;}
+.supp-note{font-size:11px;color:var(--text3);margin-top:3px;font-style:italic;}
+.supp-freq-tag{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;padding:2px 6px;border-radius:5px;margin-top:5px;background:rgba(255,255,255,0.06);color:var(--text3);}
+
 
 
 /* HOME */
@@ -524,6 +537,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
     <!-- ══ ALIMENTAÇÃO ══ -->
     <div class="screen" id="sc-food">
+      <div class="view-tabs">
+        <button class="view-tab on" onclick="showFoodView('meals',this)">Refeições</button>
+        <button class="view-tab" onclick="showFoodView('supplements',this)">Suplementos</button>
+      </div>
+
+      <div id="food-view-meals">
       <div class="card">
         <div class="cal-ring-wrap">
           <div class="cal-ring">
@@ -552,7 +571,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
             </div>
           </div>
         </div>
-        <div style="text-align:center;font-size:12px;color:var(--text3);">Meta: <span style="color:var(--amber);font-family:var(--mono);">2850 kcal</span> · <span id="cal-remaining" style="font-family:var(--mono);">2850 restantes</span></div>
+        <div style="text-align:center;font-size:12px;color:var(--text3);">Meta: <span style="color:var(--amber);font-family:var(--mono);">2800 kcal</span> · <span id="cal-remaining" style="font-family:var(--mono);">2800 restantes</span></div>
       </div>
 
       <button class="ai-food-btn" onclick="openAiModal()">
@@ -561,7 +580,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </button>
 
       <div id="meal-sections"></div>
+      </div>
+
+      <div id="food-view-supplements" style="display:none;">
+        <div class="card" style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="stit" style="margin:0;">Aderência de hoje</div>
+            <span id="supplement-progress" style="font-size:12px;color:var(--text3);font-family:var(--mono);">0/0</span>
+          </div>
+        </div>
+        <div id="supplement-list"></div>
+      </div>
     </div>
+
 
     <!-- ══ COACH AI ══ -->
     <div class="screen" id="sc-coach">
@@ -1256,8 +1287,20 @@ const EXERCISE_DB = [
 const tagColors={forca:'tag-blue',progressao:'tag-green',costas:'tag-blue',composto:'tag-green',volume:'tag-amber',peito:'tag-blue',isolado:'tag-amber',posterior:'tag-purple',finalizador:'tag-green',principal:'tag-blue',gluteo:'tag-purple',ombro:'tag-blue',cardio:'tag-green',bracos:'tag-red',core:'tag-purple',personalizado:'tag-purple'};
 
 const MEAL_NAMES = ['Café da manhã','Lanche da manhã','Almoço','Pré-treino','Pós-treino','Jantar'];
-const CAL_META = 2850;
+const CAL_META = 2800;
 const MACRO_META = {p:160,c:350,f:80};
+
+// Plano de suplementação/medicação — dias da semana: 0=dom,1=seg,2=ter,3=qua,4=qui,5=sex,6=sáb
+const SUPPLEMENT_PLAN = [
+  {id:'concor', name:'Concor 2,5mg', dose:'1 comprimido', freq:'daily', note:'uso contínuo'},
+  {id:'vitd_k2', name:'Vitamina D + K2', dose:'10.000UI + 180mcg — 1 dose', freq:'daily'},
+  {id:'metilfolato', name:'Metilfolato + B12', dose:'300mcg + 1000mcg — 1 cápsula sublingual', freq:'daily'},
+  {id:'cabergolina', name:'Cabergolina 0,5mg', dose:'1/2 comprimido', freq:'weekly', days:[1], note:'toda segunda-feira'},
+  {id:'manipulado', name:'Anastrozol + Alopurinol + Tamoxifeno', dose:'1 cápsula em jejum', freq:'weekly', days:[1,4], note:'segunda e quinta-feira'},
+  {id:'testo', name:'Cipionato de Testosterona 200mg', dose:'1 ampola IM', freq:'weekly', days:[4], note:'toda quinta-feira'},
+  {id:'nandrolona', name:'Decanoato de Nandrolona 50mg', dose:'1 ampola IM', freq:'weekly', days:[4], note:'toda quinta-feira'},
+  {id:'pretreino', name:'Fórmula pré-treino', dose:'Taurina, S7, Cafeína, Rhodiola, Citrus, L-tirosina — 1 cápsula', freq:'preworkout', note:'30 min antes do treino'},
+];
 
 // Banco de alimentos (por 100g/ml)
 const FOOD_DB = [
@@ -1344,6 +1387,7 @@ let exChecked = {};
 let exSeries = {};     // key -> [{peso,reps,obs}]
 let workoutHistory = ld('workoutHistory',[]);
 let foodLog = {};      // mealName -> [{name,qty,kcal,p,c,f}]
+let supplementLog = {}; // supplementId -> true/false (tomado hoje)
 let openPanel = null;
 let histFilter = 'ALL';
 let histView = 'sessions';
@@ -1414,6 +1458,7 @@ function loadDayState(dateKey){
   exChecked = ld('exChecked_'+selectedDateKey,{});
   exSeries = ld('exSeries_'+selectedDateKey,{});
   foodLog = ld('foodLog_'+selectedDateKey, {});
+  supplementLog = ld('supplementLog_'+selectedDateKey, {});
   customExercises = ld('customExercises_'+selectedDateKey, {});
   hiddenExercises = ld('hiddenExercises_'+selectedDateKey, {});
   normalizeExerciseLibrary();
@@ -1659,7 +1704,10 @@ function selectTimelineDate(dateKey){
   loadDayState(dateKey);
   renderSelector();
   renderExs();
-  if(document.getElementById('sc-food')?.classList.contains('on')) renderMealSections();
+  if(document.getElementById('sc-food')?.classList.contains('on')){
+    renderMealSections();
+    if(document.getElementById('food-view-supplements').style.display!=='none') renderSupplements();
+  }
 }
 
 function selTreino(k){
@@ -2207,6 +2255,57 @@ function updateCalSummary(){
   document.getElementById('prot-bar').style.width=Math.min(tot.p/MACRO_META.p*100,100)+'%';
   document.getElementById('carb-bar').style.width=Math.min(tot.c/MACRO_META.c*100,100)+'%';
   document.getElementById('fat-bar').style.width=Math.min(tot.f/MACRO_META.f*100,100)+'%';
+}
+
+function showFoodView(v,btn){
+  document.querySelectorAll('#sc-food .view-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('food-view-meals').style.display = v==='meals' ? 'block' : 'none';
+  document.getElementById('food-view-supplements').style.display = v==='supplements' ? 'block' : 'none';
+  if(v==='supplements') renderSupplements();
+}
+
+function getSupplementsForDate(dateKey){
+  const weekday = parseDateKey(dateKey).getDay();
+  const isTrainingDay = getPlanCodeForDate(parseDateKey(dateKey)) !== 'DESCANSO';
+  return SUPPLEMENT_PLAN.filter(item=>{
+    if(item.freq==='daily') return true;
+    if(item.freq==='weekly') return (item.days||[]).includes(weekday);
+    if(item.freq==='preworkout') return isTrainingDay;
+    return false;
+  });
+}
+
+function toggleSupplement(id){
+  supplementLog[id] = !supplementLog[id];
+  sv('supplementLog_'+selectedDateKey, supplementLog);
+  renderSupplements();
+}
+
+function renderSupplements(){
+  const items = getSupplementsForDate(selectedDateKey);
+  const el = document.getElementById('supplement-list');
+  const freqLabel = {daily:'Diário', weekly:'Semanal', preworkout:'Pré-treino'};
+  if(!items.length){
+    el.innerHTML = '<p class="empty">Nenhum suplemento programado para este dia.</p>';
+  } else {
+    el.innerHTML = items.map(item=>{
+      const isDone = !!supplementLog[item.id];
+      return `<div class="supp-item${isDone?' done':''}" onclick="toggleSupplement('${item.id}')">
+        <button class="supp-check${isDone?' done':''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+        <div class="supp-info">
+          <div class="supp-name">${item.name}</div>
+          <div class="supp-dose">${item.dose}</div>
+          ${item.note?`<div class="supp-note">${item.note}</div>`:''}
+          <span class="supp-freq-tag">${freqLabel[item.freq]}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  const doneCount = items.filter(i=>supplementLog[i.id]).length;
+  document.getElementById('supplement-progress').textContent = `${doneCount}/${items.length}`;
 }
 
 function renderMealSections(){
@@ -2979,6 +3078,14 @@ function getAllBackupData(){
       }
       return all;
     })(),
+    supplementLog: (()=>{
+      const all={};
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('supplementLog_')) all[k]=JSON.parse(localStorage.getItem(k)||'{}');
+      }
+      return all;
+    })(),
     customExercises,
     hiddenExercises,
     coachMemory,
@@ -3174,6 +3281,9 @@ function importBackup(event){
       if(data.foodLog){
         Object.entries(data.foodLog).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
       }
+      if(data.supplementLog){
+        Object.entries(data.supplementLog).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
+      }
       if(data.coachMemory) sv('coachMemory', data.coachMemory);
       if(data.checkinLog) sv('checkinLog', data.checkinLog);
       // Reload state
@@ -3333,7 +3443,10 @@ function showScreen(id,btn){
     });
   }
   if(id==='hist'){renderHistTabs();renderSessions();}
-  if(id==='food') renderMealSections();
+  if(id==='food'){
+    renderMealSections();
+    if(document.getElementById('food-view-supplements').style.display!=='none') renderSupplements();
+  }
   if(id==='coach'){ renderCoachMemoryCard(); renderDailyCheckIn(); renderCoachChat(); }
 }
 

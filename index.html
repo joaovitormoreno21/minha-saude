@@ -176,23 +176,39 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .tr-empty svg{width:14px;height:14px;vertical-align:-2px;}
 
 /* PAINEL DO EXERCÍCIO (bottom sheet) */
-.modal-overlay{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
 .modal{border-radius:26px 26px 0 0;}
 .modal-overlay.open .modal{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);}
-@keyframes sheetUp{from{transform:translateY(40px);opacity:.4;}to{transform:none;opacity:1;}}
+@keyframes sheetUp{from{transform:translateY(60px);}to{transform:none;}}
 .sheet{padding-top:8px;max-height:90dvh;}
 .sheet-handle{width:38px;height:5px;border-radius:3px;background:var(--bg5);margin:0 auto 12px;cursor:pointer;}
 .sh-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .sh-name{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-0.01em;}
 .sh-meta{font-size:13px;color:var(--text2);margin-top:3px;}
-.sh-lbl{font-size:12px;color:var(--text3);margin:16px 0 7px;}
-.sh-hist{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;}
-.sh-hist::-webkit-scrollbar{display:none;}
-.sh-hist-chip{flex-shrink:0;max-width:240px;background:var(--bg3);border-radius:12px;padding:8px 11px;}
-.sh-hist-date{display:block;font-size:11px;color:var(--text3);}
-.sh-hist-val{display:block;font-size:13px;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;}
-.sh-hist-obs{display:block;font-size:11px;color:var(--text3);font-style:italic;margin-top:2px;white-space:normal;}
-.sh-hist-empty{font-size:13px;color:var(--text3);}
+.sh-last{width:100%;display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border:none;border-radius:14px;background:var(--bg3);color:var(--text);font-family:var(--font);text-align:left;cursor:pointer;transition:transform .12s;}
+.sh-last:active{transform:scale(0.98);}
+.sh-last-empty{color:var(--text3);font-size:13px;cursor:default;}
+.sh-last-ico{width:30px;height:30px;flex-shrink:0;border-radius:50%;background:rgba(207,255,82,0.12);color:var(--accent);padding:7px;display:flex;}
+.sh-last-ico svg{width:100%;height:100%;}
+.sh-last-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.sh-last-lbl{font-size:11px;color:var(--text3);}
+.sh-last-val{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sh-last-more{display:flex;align-items:center;gap:2px;font-size:12px;color:var(--accent);flex-shrink:0;}
+.sh-last-more .tr-row-chev{color:var(--accent);width:14px;height:14px;}
+#hist-sheet .modal{max-height:84dvh;}
+#hs-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+.hs-card{background:var(--bg3);border-radius:16px;padding:12px 14px;}
+.hs-card.latest{box-shadow:inset 0 0 0 1px rgba(207,255,82,0.35);}
+.hs-card-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.hs-date{font-size:14px;font-weight:600;}
+.hs-date::first-letter{text-transform:uppercase;}
+.hs-rel{font-size:12px;color:var(--text3);}
+.hs-set{display:grid;grid-template-columns:22px 78px 20px 1fr;align-items:baseline;padding:6px 0;border-top:0.5px solid var(--border);font-variant-numeric:tabular-nums;}
+.hs-set-n{font-size:12px;color:var(--text3);}
+.hs-set-v{font-size:16px;font-weight:600;}
+.hs-set-v small{font-size:12px;font-weight:400;color:var(--text3);}
+.hs-set-x{font-size:12px;color:var(--text3);}
+.hs-obs{margin-top:6px;font-size:12px;color:var(--text2);font-style:italic;}
+.hs-best{margin-top:6px;font-size:12px;color:var(--accent);}
 .sh-cols{display:grid;grid-template-columns:22px 1fr 1fr 40px;gap:8px;margin:16px 0 6px;font-size:12px;color:var(--text3);text-align:center;}
 .sh-set{display:grid;grid-template-columns:22px 1fr 1fr 40px;gap:8px;align-items:center;margin-bottom:8px;}
 .sh-n{font-size:13px;color:var(--text3);text-align:center;font-variant-numeric:tabular-nums;}
@@ -845,8 +861,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
       <button class="icon-btn" onclick="sheetMenu()" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
     </div>
-    <div class="sh-lbl">Treinos anteriores</div>
-    <div class="sh-hist" id="sh-hist"></div>
+    <div id="sh-hist"></div>
     <div class="sh-cols"><span></span><span id="sh-col1">kg</span><span id="sh-col2">reps</span><span></span></div>
     <div id="sh-sets"></div>
     <div class="sh-btns">
@@ -856,6 +871,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
     <input class="sh-obs" id="sh-obs" type="text" placeholder="Observação (opcional)" oninput="sheetObs(this.value)" autocomplete="off">
     <button class="tr-cta sh-done" onclick="finishExSheet()">Concluir exercício</button>
+  </div>
+</div>
+
+<!-- ══ HISTÓRICO DO EXERCÍCIO (abre por cima do painel) ══ -->
+<div class="modal-overlay" id="hist-sheet" onclick="closeHistSheet(event)">
+  <div class="modal sheet">
+    <div class="sheet-handle" onclick="closeHistSheet()"></div>
+    <div class="sh-hdr">
+      <div style="min-width:0;">
+        <div class="sh-name">Treinos anteriores</div>
+        <div class="sh-meta" id="hs-sub">—</div>
+      </div>
+      <button class="icon-btn" onclick="closeHistSheet()" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div id="hs-list"></div>
   </div>
 </div>
 
@@ -2304,16 +2334,62 @@ function closeExSheet(e){
   renderExs();
 }
 
+function fmtSetShort(sr,cardio){ return cardio?`${sr.peso||'—'}km ${sr.reps||'—'}min`:`${sr.peso||'—'}×${sr.reps||'—'}`; }
+
+function relDayLabel(dateKey){
+  const diff=Math.round((parseDateKey(selectedDateKey)-parseDateKey(dateKey))/86400000);
+  if(diff===1) return 'ontem';
+  if(diff>1) return `há ${diff} dias`;
+  return '';
+}
+
+// No painel do exercício: uma linha com o último treino; toque abre o histórico completo.
 function renderSheetHistory(ex){
   const el=document.getElementById('sh-hist');
-  const hist=getExerciseHistory(ex.name);
+  const last=getExerciseHistory(ex.name,1)[0];
   const cardio=ex.inputMode==='cardio';
-  if(!hist.length){ el.innerHTML='<div class="sh-hist-empty">Primeira vez neste exercício</div>'; return; }
-  el.innerHTML=hist.map(h=>{
-    const [d,m]=h.dateKey.split('-');
-    const txt=h.series.map(sr=>cardio?`${sr.peso||'—'}km ${sr.reps||'—'}min`:`${sr.peso||'—'}×${sr.reps||'—'}`).join(' · ');
-    return `<div class="sh-hist-chip"><span class="sh-hist-date">${d}/${m}</span><span class="sh-hist-val">${txt}</span>${h.obs?`<span class="sh-hist-obs">${escapeHtml(h.obs)}</span>`:''}</div>`;
+  if(!last){ el.innerHTML='<div class="sh-last sh-last-empty">Primeira vez neste exercício</div>'; return; }
+  const [d,m]=last.dateKey.split('-');
+  el.innerHTML=`<button class="sh-last" onclick="openHistSheet()">
+    <span class="sh-last-ico">${ICON.clock}</span>
+    <span class="sh-last-main"><span class="sh-last-lbl">Último treino · ${d}/${m}</span><span class="sh-last-val">${last.series.map(sr=>fmtSetShort(sr,cardio)).join(' · ')}</span></span>
+    <span class="sh-last-more">Ver todos<span class="tr-row-chev">${ICON.chev}</span></span>
+  </button>`;
+}
+
+function openHistSheet(){
+  const ex=getExByKey(sheetKey);
+  if(!ex) return;
+  const cardio=ex.inputMode==='cardio';
+  const hist=getExerciseHistory(ex.name,30);
+  document.getElementById('hs-sub').textContent=`${ex.name} · ${hist.length} treino${hist.length>1?'s':''}`;
+  document.getElementById('hs-list').innerHTML=hist.map((h,idx)=>{
+    const date=parseDateKey(h.dateKey);
+    const wd=WEEKDAY_SHORT[date.getDay()];
+    const rel=relDayLabel(h.dateKey);
+    const best=cardio?null:h.series.reduce((b,x)=>parseFloat(x.peso||0)>parseFloat(b.peso||0)?x:b,h.series[0]);
+    const rows=h.series.map((sr,i)=>`<div class="hs-set">
+        <span class="hs-set-n">${i+1}</span>
+        <span class="hs-set-v">${sr.peso||'—'}<small>${cardio?' km':' kg'}</small></span>
+        <span class="hs-set-x">×</span>
+        <span class="hs-set-v">${sr.reps||'—'}<small>${cardio?' min':' reps'}</small></span>
+      </div>`).join('');
+    return `<div class="hs-card${idx===0?' latest':''}">
+      <div class="hs-card-hdr">
+        <span class="hs-date">${wd}, ${date.getDate()} ${MONTH_SHORT[date.getMonth()]}</span>
+        <span class="hs-rel">${rel}</span>
+      </div>
+      ${rows}
+      ${h.obs?`<div class="hs-obs">${escapeHtml(h.obs)}</div>`:''}
+      ${best?.peso?`<div class="hs-best">Melhor série: ${best.peso} kg × ${best.reps||'—'}</div>`:''}
+    </div>`;
   }).join('');
+  document.getElementById('hist-sheet').classList.add('open');
+}
+
+function closeHistSheet(e){
+  if(e&&e.target!==document.getElementById('hist-sheet')) return;
+  document.getElementById('hist-sheet').classList.remove('open');
 }
 
 function renderSheetSets(){

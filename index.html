@@ -132,6 +132,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 /* ── TREINO HEADER ── */
 .t-hdr{margin-bottom:12px;}
+.t-hdr-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.tpl-edit-btn{background:rgba(79,127,255,0.10);border:0.5px solid rgba(79,127,255,0.3);color:var(--accent);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;font-family:var(--font);cursor:pointer;flex-shrink:0;}
+.logged-n{color:var(--accent2);}
+.hist-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 11px;margin-bottom:12px;}
+.hist-unit{text-transform:none;letter-spacing:0;color:var(--text3);}
+.hist-empty{font-size:12px;color:var(--text3);margin-top:6px;}
+.hist-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:7px 0;border-bottom:0.5px solid var(--border);}
+.hist-row:last-child{border-bottom:none;padding-bottom:0;}
+.hist-date{font-size:11px;color:var(--text3);font-family:var(--mono);min-width:38px;}
+.hist-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.hist-obs{flex-basis:100%;font-size:11px;color:var(--text3);font-style:italic;padding-left:46px;}
+.remove-ex-link{display:block;margin:12px auto 0;background:none;border:none;color:var(--text3);font-size:11px;font-family:var(--font);cursor:pointer;text-decoration:underline;}
+.tpl-item{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;}
+.tpl-item .search-inp{margin-bottom:6px;padding:9px 11px;font-size:13px;}
+.tpl-row{display:flex;gap:6px;}
+.tpl-row .search-inp{flex:1;min-width:0;}
+.tpl-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:2px;}
+.tpl-tools button{background:var(--bg4);border:0.5px solid var(--border2);color:var(--text2);border-radius:8px;width:34px;height:30px;font-size:14px;cursor:pointer;}
+.tpl-tools .tpl-del{color:var(--red);border-color:rgba(255,92,92,0.25);background:rgba(255,92,92,0.10);}
+.tpl-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin:0 0 3px 2px;}
 .t-label{font-size:15px;font-weight:600;margin-bottom:2px;}
 .t-obj{font-size:12px;color:var(--text2);}
 
@@ -368,18 +388,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .coach-rec:last-child{margin-bottom:0;}
 .coach-apply-btn{width:100%;padding:12px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font);margin-top:8px;}
 .coach-raw{font-size:13px;color:var(--text2);line-height:1.5;white-space:pre-wrap;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;display:none;}
-.coach-page-head{padding:2px 2px 10px;margin-bottom:0;}
-.coach-page-title{font-size:19px;font-weight:700;margin-bottom:3px;font-family:var(--display);}
-.coach-page-sub{font-size:12px;color:var(--text2);line-height:1.4}
-.coach-insight-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-family:var(--mono);background:var(--bg2);border:0.5px solid var(--border);border-radius:999px;padding:9px 14px;margin-bottom:10px;overflow-x:auto;white-space:nowrap;}
-.coach-insight-dot{color:var(--text3);}
-.coach-pill-row{display:flex;gap:8px;margin-bottom:10px;}
-.coach-pill{padding:8px 14px;border-radius:999px;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
-.coach-quick-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:12px;scrollbar-width:none;}
-.coach-quick-scroll::-webkit-scrollbar{display:none;}
-.coach-chip{flex-shrink:0;padding:8px 13px;border-radius:999px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;}
-.coach-chip:active{background:var(--bg4);}
-.coach-chat-card-tall .coach-chat{max-height:58dvh;}
+.coach-page-head{background:linear-gradient(135deg,rgba(45,212,160,.12),rgba(79,127,255,.10));border:.5px solid rgba(45,212,160,.25);border-radius:var(--radius);padding:15px;margin-bottom:12px}
+.coach-page-title{font-size:18px;font-weight:700;margin-bottom:4px}.coach-page-sub{font-size:12px;color:var(--text2);line-height:1.45}
 .coach-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.coach-quick{padding:11px 10px;border-radius:var(--radius-sm);border:.5px solid var(--border2);background:var(--bg3);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);text-align:left;line-height:1.25}.coach-quick small{display:block;color:var(--text3);font-size:10px;font-weight:500;margin-top:3px}
 .coach-chat-card{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px}.coach-chat{display:flex;flex-direction:column;gap:8px;max-height:48dvh;overflow-y:auto;padding:2px 0 10px}.coach-msg{padding:10px 11px;border-radius:12px;font-size:13px;line-height:1.48;white-space:pre-wrap}.coach-msg.user{align-self:flex-end;background:var(--accent);color:var(--accent-ink);max-width:88%}.coach-msg.ai{align-self:flex-start;background:var(--bg3);border:.5px solid var(--border2);color:var(--text2);max-width:94%}
 .coach-action-box{background:rgba(45,212,160,.09);border:.5px solid rgba(45,212,160,.25);border-radius:var(--radius-sm);padding:10px}.coach-action-btn{width:100%;padding:10px;background:var(--accent2);color:#0a1a14;border:none;border-radius:var(--radius-xs);font-size:13px;font-weight:700;cursor:pointer}.coach-input-row{display:flex;gap:8px;align-items:flex-end;margin-top:8px}.coach-input{flex:1;min-height:44px;max-height:120px;padding:11px 12px;border:.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:13px;resize:none;outline:none;line-height:1.4}.coach-send{width:46px;height:44px;border:none;border-radius:var(--radius-sm);background:var(--accent2);color:#0a1a14;font-size:18px;font-weight:800;cursor:pointer}.coach-send:disabled{opacity:.55}
@@ -606,28 +616,37 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
     <!-- ══ COACH AI ══ -->
     <div class="screen" id="sc-coach">
-      <div class="coach-page-head">
-        <div class="coach-page-title">Coach AI</div>
-        <div class="coach-page-sub">Tire dúvidas, peça ajustes e aplique ações no app com confirmação.</div>
+      <div class="coach-page-head"><div class="coach-page-title">🤖 Coach AI</div><div class="coach-page-sub">Tire dúvidas sobre treinos, peça ajustes e aplique ações no app com confirmação.</div></div>
+      <div class="coach-memory-card">
+        <div class="coach-memory-top">
+          <div>
+            <div class="coach-memory-title">Memória inteligente</div>
+            <div class="coach-memory-sub">Contexto fixo + dados dinâmicos do app enviados em toda conversa.</div>
+          </div>
+          <button class="coach-memory-btn" onclick="openCoachMemoryModal()">Editar</button>
+        </div>
+        <div class="coach-memory-list" id="coach-memory-list"></div>
       </div>
-
-      <div class="coach-insight-bar" id="coach-insight-bar"></div>
-
-      <div class="coach-pill-row">
-        <button class="coach-pill" onclick="openCoachMemoryModal()">🧠 Memória</button>
-        <button class="coach-pill" onclick="openCoachCheckinModal()">📋 Check-in</button>
+      <div class="coach-checkin-card">
+        <div class="coach-checkin-head">
+          <div>
+            <div class="coach-checkin-title">Check-in rápido de hoje</div>
+            <div class="coach-checkin-sub">20 segundos: isso vira contexto automático para ajustar treino, volume e descanso.</div>
+          </div>
+          <button class="coach-memory-btn" onclick="runCoachQuick('checkin')">Analisar</button>
+        </div>
+        <div class="coach-checkin-grid" id="coach-checkin-grid"></div>
+        <div class="coach-context-mini" id="coach-context-mini"></div>
       </div>
-
-      <div class="coach-quick-scroll" id="coach-quick-scroll">
-        <button class="coach-chip" onclick="runCoachQuick('plan_week')">Planejar semana</button>
-        <button class="coach-chip" onclick="runCoachQuick('today')">Treino de hoje</button>
-        <button class="coach-chip" onclick="runCoachQuick('fatigue')">Estou cansado</button>
-        <button class="coach-chip" onclick="runCoachQuick('progress')">Progressão</button>
-        <button class="coach-chip" onclick="runCoachQuick('review_loads')">Revisar cargas</button>
-        <button class="coach-chip" onclick="runCoachQuick('weekly_summary')">Resumo semanal</button>
+      <div class="coach-quick-grid">
+        <button class="coach-quick" onclick="runCoachQuick('plan_week')">Planejar próxima semana<small>baseado no histórico</small></button>
+        <button class="coach-quick" onclick="runCoachQuick('today')">Treino de hoje<small>cargas e foco</small></button>
+        <button class="coach-quick" onclick="runCoachQuick('fatigue')">Estou cansado<small>treino ou descanso?</small></button>
+        <button class="coach-quick" onclick="runCoachQuick('progress')">Analisar progressão<small>pontos fortes/fracos</small></button>
+        <button class="coach-quick" onclick="runCoachQuick('review_loads')">Revisar cargas<small>progredir ou manter</small></button>
+        <button class="coach-quick" onclick="runCoachQuick('weekly_summary')">Resumo semanal<small>salvar aprendizado</small></button>
       </div>
-
-      <div class="coach-chat-card coach-chat-card-tall">
+      <div class="coach-chat-card">
         <div class="coach-chat" id="coach-chat"></div>
         <div class="coach-attachment" id="coach-attachment-preview">
           <img id="coach-attachment-img" alt="Imagem anexada">
@@ -638,12 +657,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <button class="coach-attachment-del" onclick="clearCoachImageAttachment()">×</button>
         </div>
         <div class="coach-input-row">
-          <textarea class="coach-input" id="coach-input" placeholder="Ex: hoje faço Upper B ou descanso?"></textarea>
+          <textarea class="coach-input" id="coach-input" placeholder="Ex: hoje faço Upper B ou descanso? / envie foto do treino, exame ou equipamento e pergunte algo"></textarea>
           <button class="coach-send" id="coach-send" onclick="sendCoachChat()">➤</button>
         </div>
         <div class="coach-tools">
           <button class="coach-tool-btn" id="coach-mic-btn" onclick="toggleCoachMic()">🎙️ Falar</button>
-          <button class="coach-tool-btn" onclick="document.getElementById('coach-image-input').click()">📷 Foto</button>
+          <button class="coach-tool-btn" onclick="document.getElementById('coach-image-input').click()">📷 Enviar foto</button>
           <input type="file" id="coach-image-input" accept="image/*" style="display:none" onchange="handleCoachImageUpload(event)">
         </div>
       </div>
@@ -745,6 +764,21 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
+<!-- ══ MODAL EDITAR TREINO PADRÃO ══ -->
+<div class="modal-overlay" id="tpl-modal" onclick="closeTplModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="tpl-title">Editar padrão</span>
+      <button class="modal-close" onclick="closeTplModal()">×</button>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.45;">Altera o padrão que aparece sempre que você abrir este treino. Dias que você já anotou não mudam.</p>
+    <div id="tpl-list"></div>
+    <button class="add-ex-btn" onclick="tplAdd()">＋ Novo exercício</button>
+    <button class="btn-primary" onclick="saveTpl()">Salvar padrão</button>
+    <button class="restore-btn" style="margin-top:10px;margin-bottom:0;" onclick="resetTpl()">↺ Voltar ao padrão original</button>
+  </div>
+</div>
+
 <!-- ══ MODAL EXPORTAR HISTÓRICO ══ -->
 <div class="modal-overlay" id="export-modal" onclick="closeExportModal(event)">
   <div class="modal">
@@ -780,19 +814,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
     <div id="weight-history-list" style="margin-bottom:12px;"></div>
     <button class="plan-save-btn" onclick="saveWeight()">Salvar</button>
-  </div>
-</div>
-
-<!-- ══ MODAL CHECK-IN COACH ══ -->
-<div class="modal-overlay" id="checkin-modal" onclick="closeCheckinModal(event)">
-  <div class="modal">
-    <div class="modal-hdr">
-      <span class="modal-title">📋 Check-in de hoje</span>
-      <button class="modal-close" onclick="closeCheckinModal()">×</button>
-    </div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.45;">20 segundos: isso vira contexto automático para o Coach ajustar treino, volume e descanso.</p>
-    <div class="coach-checkin-grid" id="coach-checkin-grid"></div>
-    <div class="coach-context-mini" id="coach-context-mini"></div>
   </div>
 </div>
 
@@ -1358,6 +1379,16 @@ const FOOD_DB = [
 const ld = (k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d;}catch{return d;}};
 const sv = (k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));window.firebaseSave?.(k,v);}catch(e){console.error('Erro ao salvar',e);}};
 
+// Treinos padrão editáveis: o que o usuário edita fica em treinoTemplates e sobrepõe o original.
+const TREINOS_ORIGINAL = JSON.parse(JSON.stringify(TREINOS));
+let treinoTemplates = ld('treinoTemplates', {});
+function applyTreinoTemplates(){
+  Object.keys(TREINOS).forEach(code=>{
+    TREINOS[code].exs = JSON.parse(JSON.stringify(treinoTemplates[code] || TREINOS_ORIGINAL[code].exs));
+  });
+}
+applyTreinoTemplates();
+
 const TIMELINE_START = new Date(2026,3,1);
 const TIMELINE_END = new Date(2026,11,31);
 const WEEKDAY_SHORT = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -1894,19 +1925,134 @@ function getLastPerf(exName){
   return null;
 }
 
+// ── Editor do treino padrão ──
+let tplDraft=[];
+let tplCode=null;
+
+function openTplModal(){
+  tplCode=activeTreino;
+  tplDraft=JSON.parse(JSON.stringify(TREINOS[tplCode].exs||[]));
+  document.getElementById('tpl-title').textContent='Editar padrão · '+TREINOS[tplCode].label;
+  renderTplList();
+  document.getElementById('tpl-modal').classList.add('open');
+}
+function closeTplModal(e){
+  if(e&&e.target!==document.getElementById('tpl-modal')) return;
+  document.getElementById('tpl-modal').classList.remove('open');
+}
+function renderTplList(){
+  const el=document.getElementById('tpl-list');
+  if(!tplDraft.length){ el.innerHTML='<p style="font-size:13px;color:var(--text3);padding:6px 0 12px;">Nenhum exercício. Adicione abaixo.</p>'; return; }
+  el.innerHTML=tplDraft.map((ex,i)=>`<div class="tpl-item">
+    <div class="tpl-lbl">Nome</div>
+    <input class="search-inp" value="${escapeHtml(ex.name||'')}" oninput="tplSet(${i},'name',this.value)" autocomplete="off">
+    <div class="tpl-lbl">Séries x reps / cargas</div>
+    <input class="search-inp" value="${escapeHtml(ex.meta||'')}" oninput="tplSet(${i},'meta',this.value)" autocomplete="off">
+    <div class="tpl-row">
+      <div style="flex:1;min-width:0;"><div class="tpl-lbl">Descanso</div><input class="search-inp" value="${escapeHtml(ex.rest||'')}" oninput="tplSet(${i},'rest',this.value)" autocomplete="off"></div>
+      <div style="width:84px;"><div class="tpl-lbl">Nº séries</div><input class="search-inp" type="number" inputmode="numeric" min="1" max="12" value="${ex.defaultSeries||3}" oninput="tplSet(${i},'defaultSeries',this.value)"></div>
+    </div>
+    <div class="tpl-tools">
+      <button onclick="tplMove(${i},-1)" ${i===0?'disabled style="opacity:.3"':''}>↑</button>
+      <button onclick="tplMove(${i},1)" ${i===tplDraft.length-1?'disabled style="opacity:.3"':''}>↓</button>
+      <button class="tpl-del" onclick="tplDel(${i})">×</button>
+    </div>
+  </div>`).join('');
+}
+function tplSet(i,field,val){ if(tplDraft[i]) tplDraft[i][field]=val; }
+function tplMove(i,dir){
+  const j=i+dir;
+  if(j<0||j>=tplDraft.length) return;
+  [tplDraft[i],tplDraft[j]]=[tplDraft[j],tplDraft[i]];
+  renderTplList();
+}
+function tplDel(i){
+  if(!confirm(`Remover "${tplDraft[i].name||'exercício'}" do padrão?`)) return;
+  tplDraft.splice(i,1);
+  renderTplList();
+}
+function tplAdd(){
+  const cardio=tplCode==='CARDIO';
+  tplDraft.push({
+    id:makeExerciseId(),
+    icon:TREINOS[tplCode].icon||'🏋️',
+    name:'',
+    meta:cardio?'20 min':'3x10',
+    tags:[],
+    rest:cardio?'—':'1–2 min',
+    defaultSeries:cardio?1:3,
+    ...(cardio?{inputMode:'cardio'}:{})
+  });
+  renderTplList();
+  const inputs=document.querySelectorAll('#tpl-list .tpl-item');
+  inputs[inputs.length-1]?.scrollIntoView({block:'center'});
+  inputs[inputs.length-1]?.querySelector('input')?.focus();
+}
+function saveTpl(){
+  const cleaned=tplDraft
+    .map(ex=>({...ex,name:(ex.name||'').trim(),meta:(ex.meta||'').trim()||'—',rest:(ex.rest||'').trim()||'—',defaultSeries:Math.min(12,Math.max(1,parseInt(ex.defaultSeries,10)||3))}))
+    .filter(ex=>ex.name);
+  treinoTemplates[tplCode]=cleaned;
+  sv('treinoTemplates',treinoTemplates);
+  applyTreinoTemplates();
+  openPanel=null;
+  document.getElementById('tpl-modal').classList.remove('open');
+  renderExs();
+  showToast('✅ Padrão do '+TREINOS[tplCode].label+' atualizado');
+}
+function resetTpl(){
+  if(!confirm('Voltar este treino ao padrão original do app?')) return;
+  delete treinoTemplates[tplCode];
+  sv('treinoTemplates',treinoTemplates);
+  applyTreinoTemplates();
+  openPanel=null;
+  document.getElementById('tpl-modal').classList.remove('open');
+  renderExs();
+  showToast('↺ Padrão original restaurado');
+}
+
+// Sessões anteriores de um exercício (mais recentes primeiro), sem contar o dia selecionado.
+function getExerciseHistory(exName, limit=5){
+  const out=[];
+  const sorted=[...dedupeWorkoutHistory(workoutHistory)].sort((a,b)=> parseDateKey(b.selectedDateKey||'01-01-2000') - parseDateKey(a.selectedDateKey||'01-01-2000'));
+  for(const s of sorted){
+    if(s.selectedDateKey===selectedDateKey) continue;
+    const ex=(s.exercicios||[]).find(x=>x.name===exName);
+    const series=(ex?.series||[]).filter(sr=>sr.peso||sr.reps);
+    if(!series.length) continue;
+    out.push({dateKey:s.selectedDateKey, series, obs:series.find(sr=>sr.obs)?.obs||''});
+    if(out.length>=limit) break;
+  }
+  return out;
+}
+
+function renderExHistory(exName, isCardio){
+  const hist=getExerciseHistory(exName);
+  if(!hist.length) return `<div class="hist-box"><div class="log-panel-title">Treinos anteriores</div><div class="hist-empty">Ainda sem registro deste exercício.</div></div>`;
+  const rows=hist.map(h=>{
+    const [d,m]=h.dateKey.split('-');
+    const chips=h.series.map(sr=>isCardio
+      ? `<span class="chip">${sr.peso||'—'}km · ${sr.reps||'—'}min</span>`
+      : `<span class="chip">${sr.peso||'—'}×${sr.reps||'—'}</span>`).join('');
+    return `<div class="hist-row"><span class="hist-date">${d}/${m}</span><div class="hist-chips">${chips}</div>${h.obs?`<div class="hist-obs">${escapeHtml(h.obs)}</div>`:''}</div>`;
+  }).join('');
+  return `<div class="hist-box"><div class="log-panel-title">Treinos anteriores <span class="hist-unit">${isCardio?'':'(kg × reps)'}</span></div>${rows}</div>`;
+}
+
 function renderExs(){
   const el=document.getElementById('exlist');
   const t=TREINOS[activeTreino];
   const exercises=getCurrentExercises();
+  const hdr=`<div class="t-hdr"><div class="t-hdr-row"><div class="t-label">${t.label} — ${t.sub}</div><button class="tpl-edit-btn" onclick="openTplModal()">✎ Editar padrão</button></div><div class="t-obj">${t.obj}</div></div>`;
   if(!exercises.length){
-    el.innerHTML=`<div class="t-hdr"><div class="t-label">${t.label} — ${t.sub}</div><div class="t-obj">${t.obj}</div></div><button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button><div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">Adicione exercícios para montar este treino do zero.</div></div>`;
+    el.innerHTML=`${hdr}<button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button><div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">Adicione exercícios para montar este treino do zero.</div></div>`;
     return;
   }
   const done=exercises.filter(e=>exChecked[e.id]).length;
   const pct=exercises.length?Math.round(done/exercises.length*100):0;
 
   const hiddenCount=(hiddenExercises[activeTreino]||[]).length;
-  let html=`<div class="t-hdr"><div class="t-label">${t.label} — ${t.sub}</div><div class="t-obj">${t.obj}</div></div>
+  let html=`${hdr}
     <div class="prog-info"><span>${done} de ${exercises.length} concluídos</span><span>${pct}%</span></div>
     <div class="pbar-w"><div class="pbar-f" style="width:${pct}%"></div></div>
     <button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button>
@@ -1917,33 +2063,23 @@ function renderExs(){
     const isDone=!!exChecked[k];
     const series=exSeries[k]||[];
     const isOpen=openPanel===k;
-    const lastPerf=getLastPerf(e.name);
-    const chips=series.filter(s=>s.reps||s.peso).map((s,si)=>`<span class="chip">S${si+1}: ${s.peso?s.peso+'kg':'—'}×${s.reps||'—'}</span>`).join('');
+    const logged=series.filter(s=>s.reps||s.peso).length;
+    const doneLine=logged?` · <span class="logged-n">${logged} série${logged>1?'s':''} anotada${logged>1?'s':''}</span>`:'';
 
     html+=`<div class="ecard${isDone?' done':''}">
       <div class="ecard-top" onclick="togglePanel('${k}',${e.defaultSeries||3})">
-        <div class="eicon">${e.icon}</div>
         <div class="einfo">
-          <div class="ehead">
-            <div class="ename">${e.name}</div>
-            ${e.isCustom?`<button class="ex-del-btn" title="Excluir exercício" onclick="event.stopPropagation();deleteExercise('${k}')">×</button>`:''}
-          </div>
-          <div class="emeta">${e.meta} · descanso ${e.rest}</div>
-          <div class="etags">${(e.tags||[]).map(t=>`<span class="tag ${tagColors[t]||'tag-blue'}">${t}</span>`).join('')}</div>
-          ${e.isCustom?'<div class="custom-badge">extra</div>':''}
-          ${chips?`<div class="saved-chips">${chips}</div>`:''}
+          <div class="ename">${e.name}</div>
+          <div class="emeta">${e.meta} · ${e.rest}${doneLine}</div>
         </div>
-        <div class="ex-actions">
-          <button class="echk${isDone?' done':''}" onclick="event.stopPropagation();toggleEx('${k}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          </button>
-          <button class="ex-del" title="Excluir exercício" onclick="event.stopPropagation();removeExerciseFromCurrentTreino('${k}')">×</button>
-        </div>
+        <button class="echk${isDone?' done':''}" onclick="event.stopPropagation();toggleEx('${k}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
       </div>
       <div class="log-panel${isOpen?' open':''}" id="panel-${k}">
+        ${isOpen?renderExHistory(e.name, e.inputMode==='cardio'):''}
         <div class="log-panel-hdr">
-          <span class="log-panel-title">Séries realizadas</span>
-          ${lastPerf?`<span class="last-perf">${lastPerf}</span>`:''}
+          <span class="log-panel-title">Hoje</span>
         </div>
         <table class="series-tbl">
           <tr><th>Série</th><th>Peso (kg)</th><th>Reps</th><th></th></tr>
@@ -1953,7 +2089,8 @@ function renderExs(){
           <button class="btn-add-serie" onclick="addSerie('${k}')">+ série</button>
           <button class="btn-save-serie" onclick="saveSeries('${k}')">✓ Salvar</button>
         </div>
-        <input class="obs-inp" type="text" placeholder="Observação (opcional)..." id="obs-${k}" value="${series[0]?.obs||''}">
+        <input class="obs-inp" type="text" placeholder="Observação (opcional)..." id="obs-${k}" value="${escapeHtml(series[0]?.obs||'')}">
+        <button class="remove-ex-link" onclick="removeExerciseFromCurrentTreino('${k}')">Remover do treino de hoje</button>
       </div>
     </div>`;
   });
@@ -2573,23 +2710,6 @@ function calcReadinessScore(checkin=getTodayCheckin()){
   return n?Math.round((score/(n*2))*100):null;
 }
 function getReadinessLabel(score){ if(score===null) return 'sem check-in'; if(score>=75) return 'bom para progredir'; if(score>=45) return 'moderado/controle'; return 'reduzir volume'; }
-function openCoachCheckinModal(){
-  document.getElementById('checkin-modal').classList.add('open');
-  renderDailyCheckIn();
-}
-function closeCheckinModal(e){
-  if(e && e.target !== document.getElementById('checkin-modal')) return;
-  document.getElementById('checkin-modal').classList.remove('open');
-}
-function renderCoachInsightBar(){
-  const el=document.getElementById('coach-insight-bar'); if(!el) return;
-  const score=calcReadinessScore();
-  const streak=calcStreak();
-  const today=isDateInTimeline(realToday)?realToday:TIMELINE_START;
-  const label=getPlanLabel(getPlanCodeForDate(today));
-  const scoreTxt = score===null ? 'sem check-in' : `prontidão ${score}%`;
-  el.innerHTML = `<span>🔥 ${streak.current}d</span><span class="coach-insight-dot">·</span><span>${scoreTxt}</span><span class="coach-insight-dot">·</span><span>hoje: ${escapeHtml(label)}</span>`;
-}
 function renderCoachContextMini(){
   const el=document.getElementById('coach-context-mini'); if(!el) return;
   const score=calcReadinessScore(); const recent=[...dedupeWorkoutHistory(workoutHistory)].slice(0,14); const today=isDateInTimeline(realToday)?realToday:TIMELINE_START;
@@ -3119,6 +3239,7 @@ function getAllBackupData(){
     })(),
     customExercises,
     hiddenExercises,
+    treinoTemplates,
     coachMemory,
     checkinLog,
     coachMemory,
@@ -3307,6 +3428,7 @@ function importBackup(event){
       if(data.weightLog) sv('weightLog', data.weightLog);
       if(data.customExercises) sv('customExercises', JSON.stringify(data.customExercises));
       if(data.hiddenExercises) sv('hiddenExercises', JSON.stringify(data.hiddenExercises));
+      if(data.treinoTemplates){ sv('treinoTemplates', data.treinoTemplates); treinoTemplates = data.treinoTemplates; applyTreinoTemplates(); renderExs(); }
       if(data.coachMemory) sv('coachMemory', data.coachMemory);
       if(data.coachChatHistory) sv('coachChatHistory', data.coachChatHistory);
       if(data.foodLog){
@@ -3478,13 +3600,15 @@ function showScreen(id,btn){
     renderMealSections();
     if(document.getElementById('food-view-supplements').style.display!=='none') renderSupplements();
   }
-  if(id==='coach'){ renderCoachMemoryCard(); renderDailyCheckIn(); renderCoachChat(); renderCoachInsightBar(); }
+  if(id==='coach'){ renderCoachMemoryCard(); renderDailyCheckIn(); renderCoachChat(); }
 }
 
 // Atualiza o estado do app após receber dados do Firebase, sem recarregar a página.
 window.refreshAppFromStorage = function(){
   try{
     weeklyPlan = ld('weeklyPlan', WEEKLY_PLAN_DEFAULT);
+    treinoTemplates = ld('treinoTemplates', {});
+    applyTreinoTemplates();
     weightLog = ld('weightLog', []);
     workoutHistory = dedupeWorkoutHistory(ld('workoutHistory', []));
     savedExerciseLibrary = ld('savedExerciseLibrary', []);
@@ -3534,7 +3658,7 @@ let currentUser=null, applyingRemote=false;
 const pendingWrites=new Map();
 let flushTimer=null;
 let isFlushing=false;
-const exact=new Set(['workoutHistory','weightLog','weeklyPlan','savedExerciseLibrary','coachMemory','coachChatHistory','checkinLog']);
+const exact=new Set(['workoutHistory','weightLog','weeklyPlan','treinoTemplates','savedExerciseLibrary','coachMemory','coachChatHistory','checkinLog']);
 const prefixes=['foodLog_','activeTreino_','exChecked_','exSeries_','customExercises_','hiddenExercises_'];
 const shouldSync=k=>exact.has(k)||prefixes.some(p=>k.startsWith(p));
 const safeId=k=>encodeURIComponent(k).replaceAll('%','_');

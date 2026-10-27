@@ -131,6 +131,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .prog-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px;font-family:var(--mono);}
 
 /* ── TREINO HEADER ── */
+.day-bar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;margin-bottom:14px;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font);cursor:pointer;text-align:left;}
+.day-bar-main{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.day-bar-date{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;}
+.day-bar-treino{font-size:16px;font-weight:600;}
+#timeline-date-label::first-letter{text-transform:uppercase;}
+.day-bar-chev{color:var(--text3);font-size:16px;}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.prog-txt{font-size:12px;color:var(--text3);font-family:var(--mono);}
+.opt-btn{background:none;border:none;color:var(--text2);font-size:22px;line-height:1;padding:0 6px;cursor:pointer;}
+.fab{position:fixed;right:18px;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);width:52px;height:52px;border-radius:50%;border:none;background:var(--accent);color:var(--accent-ink);font-size:26px;line-height:1;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.45);z-index:50;display:flex;align-items:center;justify-content:center;}
+.opt-row{width:100%;text-align:left;padding:14px 12px;margin-bottom:8px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:var(--font);cursor:pointer;}
+.finalize-btn{margin-bottom:70px;}
 .t-hdr{margin-bottom:12px;}
 .t-hdr-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .tpl-edit-btn{background:rgba(79,127,255,0.10);border:0.5px solid rgba(79,127,255,0.3);color:var(--accent);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;font-family:var(--font);cursor:pointer;flex-shrink:0;}
@@ -524,16 +536,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <!-- ══ TREINO ══ -->
 
     <div class="screen" id="sc-treino">
-      <div class="sel-wrap">
-        <div class="sel-lbl">Linha do tempo do treino</div>
-        <div class="timeline-head">
-          <div class="timeline-date" id="timeline-date-label">Selecione um dia</div>
-        </div>
-        <div class="timeline-scroll" id="timeline-scroll"></div>
-        <div class="sel-lbl" style="margin-top:12px;">Tipo de treino do dia</div>
-        <div class="sel-grid" id="sel-grid"></div>
-      </div>
+      <button class="day-bar" onclick="openDayModal()">
+        <span class="day-bar-main">
+          <span class="day-bar-date" id="day-bar-date">—</span>
+          <span class="day-bar-treino" id="day-bar-treino">—</span>
+        </span>
+        <span class="day-bar-chev">▾</span>
+      </button>
       <div id="exlist"></div>
+      <button class="fab" id="fab-add-ex" onclick="openExerciseModal()" aria-label="Adicionar exercício">＋</button>
     </div>
 
     <!-- ══ HISTÓRICO ══ -->
@@ -761,6 +772,36 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <input class="search-inp" id="custom-ex-rest" placeholder="Descanso (ex.: 1,5 min)" autocomplete="off" style="margin-bottom:0;">
       <button class="btn-primary" style="margin-top:10px;" onclick="addCustomExerciseManual()">Adicionar ao treino</button>
     </div>
+  </div>
+</div>
+
+<!-- ══ MODAL DIA E TREINO ══ -->
+<div class="modal-overlay" id="day-modal" onclick="closeDayModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">Dia e treino</span>
+      <button class="modal-close" onclick="closeDayModal()">×</button>
+    </div>
+    <div class="sel-lbl">Dia</div>
+    <div class="timeline-date" id="timeline-date-label" style="margin-bottom:10px;">Selecione um dia</div>
+    <div class="timeline-scroll" id="timeline-scroll"></div>
+    <div class="sel-lbl" style="margin-top:16px;">Tipo de treino</div>
+    <div class="sel-grid" id="sel-grid"></div>
+    <button class="btn-primary" style="margin-top:16px;" onclick="closeDayModal()">Pronto</button>
+  </div>
+</div>
+
+<!-- ══ MODAL OPÇÕES DO TREINO ══ -->
+<div class="modal-overlay" id="opt-modal" onclick="closeOptModal(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="opt-title">Opções</span>
+      <button class="modal-close" onclick="closeOptModal()">×</button>
+    </div>
+    <p id="opt-obj" style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:14px;"></p>
+    <button class="opt-row" onclick="closeOptModal();openExerciseModal()">＋ Adicionar exercício só hoje</button>
+    <button class="opt-row" onclick="closeOptModal();openTplModal()">✎ Editar o padrão deste treino</button>
+    <button class="opt-row" id="opt-restore" onclick="restoreDefaultExercises();closeOptModal()">↺ Restaurar exercícios removidos</button>
   </div>
 </div>
 
@@ -1737,7 +1778,37 @@ function renderDateTimeline(){
   });
 }
 
+function openDayModal(){
+  document.getElementById('day-modal').classList.add('open');
+  requestAnimationFrame(()=>document.getElementById('tl-'+selectedDateKey)?.scrollIntoView({inline:'center',block:'nearest'}));
+}
+function closeDayModal(e){
+  if(e&&e.target!==document.getElementById('day-modal')) return;
+  document.getElementById('day-modal').classList.remove('open');
+}
+function openOptModal(){
+  const t=TREINOS[activeTreino];
+  const hiddenCount=(hiddenExercises[activeTreino]||[]).length;
+  document.getElementById('opt-title').textContent=t.label+' — '+t.sub;
+  document.getElementById('opt-obj').textContent=t.obj||'';
+  const r=document.getElementById('opt-restore');
+  r.style.display=hiddenCount?'block':'none';
+  r.textContent=`↺ Restaurar exercícios removidos (${hiddenCount})`;
+  document.getElementById('opt-modal').classList.add('open');
+}
+function closeOptModal(e){
+  if(e&&e.target!==document.getElementById('opt-modal')) return;
+  document.getElementById('opt-modal').classList.remove('open');
+}
+function updateDayBar(){
+  const d=parseDateKey(selectedDateKey);
+  const t=TREINOS[activeTreino];
+  document.getElementById('day-bar-date').textContent=`${WEEKDAY_SHORT[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} ${MONTH_SHORT[d.getMonth()]}`;
+  document.getElementById('day-bar-treino').textContent=`${t.icon} ${t.label}`;
+}
+
 function renderSelector(){
+  updateDayBar();
   renderDateTimeline();
   document.getElementById('sel-grid').innerHTML=Object.entries(TREINOS).map(([k,t])=>`
     <button class="sel-btn${activeTreino===k?' on':''}" onclick="selTreino('${k}')">
@@ -1758,6 +1829,7 @@ function selectTimelineDate(dateKey){
 function selTreino(k){
   activeTreino=k; sv('activeTreino_'+selectedDateKey,k); openPanel=null;
   renderSelector(); renderExs();
+  document.getElementById('day-modal')?.classList.remove('open');
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2043,20 +2115,17 @@ function renderExs(){
   const el=document.getElementById('exlist');
   const t=TREINOS[activeTreino];
   const exercises=getCurrentExercises();
-  const hdr=`<div class="t-hdr"><div class="t-hdr-row"><div class="t-label">${t.label} — ${t.sub}</div><button class="tpl-edit-btn" onclick="openTplModal()">✎ Editar padrão</button></div><div class="t-obj">${t.obj}</div></div>`;
+  updateDayBar();
+  const optBtn=`<button class="opt-btn" onclick="openOptModal()" aria-label="Opções do treino">⋯</button>`;
   if(!exercises.length){
-    el.innerHTML=`${hdr}<button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button><div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">Adicione exercícios para montar este treino do zero.</div></div>`;
+    el.innerHTML=`<div class="prog-row"><span class="prog-txt">Nenhum exercício</span>${optBtn}</div><div class="rest-card"><div style="font-size:40px;margin-bottom:12px;">${t.icon}</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;">${t.label}</div><div style="font-size:13px;color:var(--text2);">Toque em ＋ para adicionar exercícios.</div></div>`;
     return;
   }
   const done=exercises.filter(e=>exChecked[e.id]).length;
   const pct=exercises.length?Math.round(done/exercises.length*100):0;
 
-  const hiddenCount=(hiddenExercises[activeTreino]||[]).length;
-  let html=`${hdr}
-    <div class="prog-info"><span>${done} de ${exercises.length} concluídos</span><span>${pct}%</span></div>
-    <div class="pbar-w"><div class="pbar-f" style="width:${pct}%"></div></div>
-    <button class="add-ex-btn" onclick="openExerciseModal()">＋ Adicionar exercício ao ${t.label}</button>
-    ${hiddenCount?`<button class="restore-btn" onclick="restoreDefaultExercises()">↺ Restaurar exercícios padrão removidos (${hiddenCount})</button>`:''}`;
+  let html=`<div class="prog-row"><span class="prog-txt">${done} de ${exercises.length} concluídos</span>${optBtn}</div>
+    <div class="pbar-w"><div class="pbar-f" style="width:${pct}%"></div></div>`;
 
   exercises.forEach((e,i)=>{
     const k=e.id||`${activeTreino}_${i}`;

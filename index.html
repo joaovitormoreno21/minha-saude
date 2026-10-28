@@ -214,6 +214,34 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .hs-chart-svg{width:100%;height:96px;display:block;margin-top:4px;}
 .hs-chart-dates{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);}
 
+/* COMO FAZER */
+.sh-howto{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 11px;border:none;border-radius:999px;background:rgba(207,255,82,0.12);color:var(--accent);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;}
+.sh-howto svg{width:15px;height:15px;}
+#howto-sheet .modal{max-height:92dvh;}
+.ht-media{position:relative;width:100%;aspect-ratio:4/3;margin-top:14px;border-radius:18px;overflow:hidden;background:#fff;border:none;padding:0;display:block;}
+.ht-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .35s ease;}
+.ht-img.on{opacity:1;}
+.ht-badge{position:absolute;left:10px;top:10px;padding:3px 9px;border-radius:999px;background:rgba(15,17,20,0.75);color:#fff;font-size:11px;font-weight:600;}
+.ht-fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;color:var(--text3);font-size:13px;background:var(--bg3);}
+.ht-failed .ht-fallback{display:flex;}
+.ht-empty{background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text2);font-size:13px;font-family:var(--font);cursor:pointer;}
+.ht-empty svg{width:28px;height:28px;color:var(--accent);}
+.ht-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.ht-tags span{padding:4px 10px;border-radius:999px;background:var(--bg3);color:var(--text2);font-size:12px;}
+.ht-sec{font-size:13px;font-weight:600;color:var(--text);margin:18px 0 8px;}
+.ht-steps{list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:10px;}
+.ht-steps li{counter-increment:st;position:relative;padding-left:34px;font-size:15px;line-height:1.45;color:var(--text);}
+.ht-steps li::before{content:counter(st);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.ht-tips{list-style:none;display:flex;flex-direction:column;gap:8px;background:var(--bg3);border-radius:14px;padding:12px 14px;}
+.ht-tips li{position:relative;padding-left:16px;font-size:14px;line-height:1.45;color:var(--text2);}
+.ht-tips li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
+.ht-none{margin-top:14px;font-size:14px;color:var(--text2);line-height:1.5;}
+.ht-video{display:block;text-align:center;text-decoration:none;margin-top:18px;}
+.ht-own{display:flex;gap:8px;}
+.ht-own-rm{display:flex;gap:16px;justify-content:center;margin-top:10px;}
+.ht-own-rm button{background:none;border:none;color:var(--red);font-size:13px;font-family:var(--font);cursor:pointer;}
+.ht-credit{margin-top:14px;text-align:center;font-size:11px;color:var(--text3);}
+
 /* PAINEL DO EXERCÍCIO (bottom sheet) */
 .modal{border-radius:26px 26px 0 0;}
 .modal-overlay.open .modal{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);}
@@ -901,6 +929,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <div style="min-width:0;">
         <div class="sh-name" id="sh-name">—</div>
         <div class="sh-meta" id="sh-meta">—</div>
+        <button class="sh-howto" onclick="openHowTo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>Como fazer</button>
       </div>
       <button class="icon-btn" onclick="sheetMenu()" aria-label="Mais opções"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
     </div>
@@ -946,6 +975,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <button class="icon-btn" onclick="closeHistSheet()" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
     <div id="hs-list"></div>
+  </div>
+</div>
+
+<!-- ══ COMO FAZER O EXERCÍCIO ══ -->
+<div class="modal-overlay" id="howto-sheet" onclick="closeHowTo(event)">
+  <div class="modal sheet">
+    <div class="sheet-handle" onclick="closeHowTo()"></div>
+    <div class="sh-hdr">
+      <div style="min-width:0;">
+        <div class="sh-name" id="ht-title">—</div>
+        <div class="sh-meta">Como fazer</div>
+      </div>
+      <button class="icon-btn" onclick="closeHowTo()" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div id="ht-body"></div>
+    <input type="file" id="ht-photo-input" accept="image/*" style="display:none" onchange="handleHowToPhoto(event)">
   </div>
 </div>
 
@@ -2279,6 +2324,239 @@ function renderExHistory(exName, isCardio){
     return `<div class="hist-row"><span class="hist-date">${d}/${m}</span><div class="hist-chips">${chips}</div>${h.obs?`<div class="hist-obs">${escapeHtml(h.obs)}</div>`:''}</div>`;
   }).join('');
   return `<div class="hist-box"><div class="log-panel-title">Treinos anteriores <span class="hist-unit">${isCardio?'':'(kg × reps)'}</span></div>${rows}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUIA DE EXECUÇÃO DOS EXERCÍCIOS
+// Imagens: free-exercise-db (domínio público), servidas pelo jsDelivr.
+// ═══════════════════════════════════════════════════════════
+const GUIDE_IMG_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
+
+const EXERCISE_GUIDE = {
+  'supino inclinado halter': {img:'Incline_Dumbbell_Press', musc:['Peitoral superior','Ombro anterior','Tríceps'],
+    steps:['Ajuste o banco entre 30° e 45° e sente com os halteres apoiados nas coxas.','Deite levando os halteres à altura do peito, punhos alinhados sobre os cotovelos.','Empurre para cima e levemente para dentro até quase estender os braços.','Desça controlando (2–3 s) até sentir alongar o peito, cotovelos a ~45° do tronco.'],
+    tips:['Mantenha as escápulas retraídas e o peito “aberto” o tempo todo.','Não bata os halteres no topo; pare um pouco antes para manter tensão.','Pés firmes no chão e glúteo encostado no banco.']},
+  'barra fixa pronada': {img:'Pullups', musc:['Dorsal','Bíceps','Romboides'],
+    steps:['Segure a barra com as palmas para frente, mãos um pouco além da largura dos ombros.','Comece pendurado, braços estendidos e ombros “encaixados” (sem relaxar).','Puxe levando o peito em direção à barra, cotovelos apontando para baixo.','Suba até o queixo passar a barra e desça devagar até estender os braços.'],
+    tips:['Evite balançar o corpo ou chutar as pernas para subir.','Pense em puxar com os cotovelos, não com as mãos.','Amplitude completa vale mais que repetição extra pela metade.']},
+  'remada maquina': {img:'Leverage_Iso_Row', musc:['Dorsal','Romboides','Trapézio médio','Bíceps'],
+    steps:['Ajuste o banco para que as pegadas fiquem na altura do meio do peito.','Apoie o peito no suporte e segure as pegadas com os braços estendidos.','Puxe levando os cotovelos para trás, junto ao corpo, e aperte as escápulas no final.','Volte devagar até alongar as costas, sem soltar o peso.'],
+    tips:['Não tire o peito do apoio para “roubar” a repetição.','Ombros longe das orelhas durante toda a puxada.','Segure 1 s na contração máxima.']},
+  'chest press': {img:'Leverage_Chest_Press', musc:['Peitoral','Ombro anterior','Tríceps'],
+    steps:['Ajuste o banco para que as pegadas fiquem na linha do meio do peito.','Costas e cabeça apoiadas, escápulas juntas e peito aberto.','Empurre até quase estender os cotovelos, sem travar.','Volte controlando até sentir o peito alongar.'],
+    tips:['Cotovelos levemente abaixo da linha dos ombros (~45–60°).','Não desencoste as costas do banco no final do movimento.']},
+  'supino reto maquina': {img:'Machine_Bench_Press', musc:['Peitoral','Ombro anterior','Tríceps'],
+    steps:['Ajuste o assento para a pegada ficar na altura do meio do peito.','Escápulas retraídas, costas apoiadas e pés firmes no chão.','Empurre até quase estender os braços.','Retorne devagar até o ponto de alongamento do peito.'],
+    tips:['Controle a descida (2–3 s): é onde está boa parte do estímulo.','Não deixe os ombros subirem em direção às orelhas.']},
+  'elevacao lateral': {img:'Side_Lateral_Raise', musc:['Deltoide lateral','Trapézio'],
+    steps:['Em pé, halteres ao lado do corpo, cotovelos levemente flexionados.','Eleve os braços para os lados até a altura dos ombros.','Conduza o movimento pelos cotovelos, mãos não passam deles.','Desça devagar até perto do quadril, sem encostar.'],
+    tips:['Tronco parado: sem balanço para subir o peso.','Pense em “afastar” os halteres do corpo, não em levantar.','No drop, reduza ~30% da carga e continue sem descanso.']},
+  'face pull': {img:'Face_Pull', musc:['Deltoide posterior','Trapézio médio','Manguito rotador'],
+    steps:['Polia na altura do rosto com corda; segure com as palmas para dentro.','Dê um passo para trás com os braços estendidos à frente.','Puxe a corda em direção à testa, abrindo os cotovelos para os lados e para cima.','No final, gire as mãos para trás (como mostrar o bíceps) e volte devagar.'],
+    tips:['Carga leve e controle: é exercício de postura e ombro, não de força máxima.','Cotovelos sempre na altura ou acima dos ombros.']},
+  'agachamento smith': {img:'Smith_Machine_Squat', musc:['Quadríceps','Glúteos','Adutores'],
+    steps:['Barra apoiada no trapézio, pés um pouco à frente da linha da barra, na largura dos ombros.','Destrave a barra, peito aberto e abdômen firme.','Desça flexionando joelhos e quadril até as coxas ficarem pelo menos paralelas ao chão.','Suba empurrando o chão com o pé inteiro.'],
+    tips:['Joelhos acompanham a direção das pontas dos pés.','Não deixe o calcanhar sair do chão.','Coluna neutra: sem arredondar a lombar no fundo.']},
+  'agachamento livre': {img:'Barbell_Squat', musc:['Quadríceps','Glúteos','Lombar'],
+    steps:['Barra no trapézio, pés na largura dos ombros com pontas levemente para fora.','Inspire, trave o abdômen e desça levando o quadril para trás e para baixo.','Desça até pelo menos a coxa paralela, mantendo o peito aberto.','Suba empurrando o chão e expire no final.'],
+    tips:['Joelhos na direção dos pés, sem cair para dentro.','Peso distribuído no pé inteiro.']},
+  'leg press': {img:'Leg_Press', musc:['Quadríceps','Glúteos','Posterior de coxa'],
+    steps:['Sente com as costas e o quadril bem apoiados; pés na plataforma na largura dos ombros.','Destrave e desça a plataforma flexionando os joelhos em direção ao peito.','Desça até ~90° ou o máximo sem o quadril sair do banco.','Empurre com o pé inteiro até quase estender os joelhos.'],
+    tips:['Nunca trave os joelhos no topo.','Se a lombar descolar do banco, você desceu demais.','Pés mais altos = mais glúteo/posterior; mais baixos = mais quadríceps.']},
+  'extensora': {img:'Leg_Extensions', musc:['Quadríceps'],
+    steps:['Ajuste o encosto para o joelho ficar alinhado ao eixo da máquina.','Apoio do rolo logo acima do tornozelo; segure as pegadas laterais.','Estenda os joelhos até as pernas ficarem retas e contraia 1 s.','Desça devagar sem deixar o peso bater.'],
+    tips:['Quadril colado no banco durante todo o movimento.','Controle a descida, principalmente nas últimas repetições.']},
+  'flexora unilateral': {img:'Standing_Leg_Curl', musc:['Posterior de coxa'],
+    steps:['Posicione-se na máquina com o rolo atrás do tornozelo de uma perna.','Apoie as mãos e mantenha o quadril parado.','Flexione o joelho levando o calcanhar em direção ao glúteo.','Desça devagar até quase estender e troque de perna ao final da série.'],
+    tips:['Não gire o quadril para ajudar a subir.','Comece pela perna mais fraca e iguale as repetições na outra.']},
+  'mesa flexora': {img:'Lying_Leg_Curls', musc:['Posterior de coxa','Panturrilha'],
+    steps:['Deite de bruços com o joelho logo após a borda do banco e o rolo acima do calcanhar.','Segure as pegadas e mantenha o quadril colado no banco.','Flexione os joelhos trazendo os calcanhares em direção ao glúteo.','Desça devagar até quase estender as pernas.'],
+    tips:['Se o quadril sobe do banco, a carga está alta.','Pontas dos pés levemente para cima ajudam a isolar o posterior.']},
+  'stiff': {img:'Stiff-Legged_Barbell_Deadlift', musc:['Posterior de coxa','Glúteos','Lombar'],
+    steps:['Em pé com a barra (ou halteres) à frente das coxas, pés na largura do quadril.','Joelhos levemente flexionados e fixos durante todo o movimento.','Leve o quadril para trás, descendo a barra rente às pernas, coluna reta.','Desça até sentir o posterior alongar (geralmente meio da canela) e suba contraindo o glúteo.'],
+    tips:['Coluna neutra sempre: se arredondar, pare a descida antes.','Barra sempre encostada nas pernas.','O movimento é do quadril, não da coluna.']},
+  'panturrilha sentado': {img:'Seated_Calf_Raise', musc:['Sóleo','Panturrilha'],
+    steps:['Sente com a ponta dos pés na plataforma e o apoio sobre as coxas, perto dos joelhos.','Solte a trava e deixe os calcanhares descerem ao máximo.','Suba na ponta dos pés o mais alto possível e segure 1 s.','Desça devagar até alongar bem.'],
+    tips:['Amplitude total é o que faz a panturrilha crescer.','Evite “quicar” embaixo; faça pausa no alongamento.']},
+  'panturrilha em pe': {img:'Standing_Calf_Raises', musc:['Gastrocnêmio','Sóleo'],
+    steps:['Ombros sob os apoios e ponta dos pés na plataforma, joelhos estendidos (sem travar).','Deixe os calcanhares descerem até alongar bem.','Suba na ponta dos pés o máximo possível e contraia 1 s.','Desça controlando.'],
+    tips:['Joelhos fixos: o movimento é só no tornozelo.','Pausa de 1–2 s embaixo elimina o efeito “mola”.']},
+  'puxada alta na polia': {img:'Wide-Grip_Lat_Pulldown', musc:['Dorsal','Bíceps','Romboides'],
+    steps:['Ajuste o apoio das coxas e segure a barra com pegada aberta, palmas para frente.','Incline levemente o tronco para trás, peito aberto.','Puxe a barra até a parte de cima do peito levando os cotovelos para baixo e para trás.','Volte devagar até estender os braços, sem soltar os ombros totalmente.'],
+    tips:['Não puxe atrás da nuca.','Evite jogar o tronco para trás para mover a carga.']},
+  'crossover': {img:'Cable_Crossover', musc:['Peitoral','Ombro anterior'],
+    steps:['Polias na posição alta, um passo à frente, tronco levemente inclinado.','Braços abertos com cotovelos levemente flexionados e fixos.','Traga as mãos para frente e para baixo em arco até se encontrarem na frente do quadril.','Aperte o peito 1 s e volte devagar até sentir alongar.'],
+    tips:['O ângulo do cotovelo não muda: é um “abraço”, não um empurrão.','Ombros para trás e para baixo durante todo o movimento.']},
+  'rosca scott': {img:'Preacher_Curl', musc:['Bíceps','Braquial'],
+    steps:['Sente e apoie a parte de trás dos braços no banco Scott, axilas encaixadas no topo.','Segure a barra com as palmas para cima e os braços quase estendidos.','Flexione os cotovelos trazendo a barra em direção aos ombros.','Desça devagar até quase estender os braços.'],
+    tips:['Não estenda totalmente com peso pesado embaixo (protege o cotovelo).','Braços sempre apoiados: sem levantar os cotovelos.']},
+  'rosca inclinada': {img:'Incline_Dumbbell_Curl', musc:['Bíceps (cabeça longa)'],
+    steps:['Banco a ~45–60°, costas apoiadas e braços pendurados com halteres, palmas para frente.','Mantenha os cotovelos parados apontando para o chão.','Flexione os cotovelos subindo os halteres sem mover os ombros.','Desça devagar até estender os braços.'],
+    tips:['Os ombros não vão para frente: o alongamento é o diferencial do exercício.','Carga menor que na rosca em pé é normal.']},
+  'triceps pulley': {img:'Triceps_Pushdown', musc:['Tríceps'],
+    steps:['De frente para a polia alta, segure a barra ou corda com os cotovelos colados ao corpo.','Tronco levemente inclinado à frente, abdômen firme.','Estenda os cotovelos empurrando para baixo até os braços ficarem retos.','Volte devagar até ~90°, sem tirar os cotovelos do lugar.'],
+    tips:['Só o antebraço se move; ombros e cotovelos ficam fixos.','Com corda, afaste as pontas no final para contrair mais.']},
+  'triceps frances unilateral': {img:'Standing_One-Arm_Dumbbell_Triceps_Extension', musc:['Tríceps (cabeça longa)'],
+    steps:['Sentado ou em pé, segure um halter com o braço estendido acima da cabeça.','Cotovelo apontando para cima e próximo da cabeça.','Desça o halter atrás da cabeça flexionando apenas o cotovelo.','Estenda o braço de volta até o topo e troque de lado ao final.'],
+    tips:['Use a outra mão para segurar o cotovelo no lugar.','Desça até sentir alongar bem o tríceps, sem dor no cotovelo.']},
+  'abdutora': {img:'Thigh_Abductor', musc:['Glúteo médio','Abdutores'],
+    steps:['Sente com as costas apoiadas e as almofadas por fora dos joelhos.','Segure as pegadas e mantenha o quadril parado.','Abra as pernas o máximo possível e segure 1 s.','Volte devagar sem deixar as placas baterem.'],
+    tips:['Inclinar o tronco à frente aumenta o trabalho do glúteo.','Controle a volta: não deixe a máquina “fechar” sozinha.']},
+  'adutora': {img:'Thigh_Adductor', musc:['Adutores'],
+    steps:['Sente com as costas apoiadas e as almofadas por dentro dos joelhos.','Comece com as pernas abertas numa amplitude confortável.','Feche as pernas apertando as almofadas uma contra a outra.','Volte devagar até a posição inicial.'],
+    tips:['Não abra além do confortável na primeira série; aumente aos poucos.','Movimento lento e contínuo.']},
+  'corrida': {img:'Running_Treadmill', musc:['Cardio','Quadríceps','Panturrilha'],
+    steps:['Comece com 3–5 min de caminhada para aquecer.','Suba a velocidade até a zona alvo (FC 130–150 bpm para zona 2).','Passos curtos, aterrissando com o pé abaixo do quadril.','Termine com 2–3 min de caminhada leve.'],
+    tips:['Zona 2 = conseguir conversar em frases curtas.','Braços a ~90°, balançando para frente e para trás.']},
+  'bicicleta': {img:'Bicycling_Stationary', musc:['Cardio','Quadríceps','Glúteos'],
+    steps:['Ajuste o banco: com o pedal embaixo, o joelho fica levemente flexionado.','Aqueça 3–5 min com carga leve.','Mantenha a cadência (80–95 rpm) e ajuste a carga para a FC alvo.','Desacelere nos últimos 2–3 min.'],
+    tips:['Joelho não deve estender totalmente nem ficar muito dobrado.','Tronco estável; não balance o quadril.']},
+  'afundo': {img:'Dumbbell_Lunges', musc:['Quadríceps','Glúteos'],
+    steps:['Em pé com halteres ao lado do corpo.','Dê um passo largo à frente e desça até o joelho de trás quase tocar o chão.','Joelho da frente alinhado sobre o pé.','Empurre com o pé da frente para voltar e alterne as pernas.'],
+    tips:['Tronco ereto durante a descida.','Passo mais longo = mais glúteo; mais curto = mais quadríceps.']},
+  'supino reto halter': {img:'Dumbbell_Bench_Press', musc:['Peitoral','Ombro anterior','Tríceps'],
+    steps:['Deite no banco reto com os halteres na altura do peito.','Escápulas retraídas e pés firmes no chão.','Empurre para cima até quase estender os braços.','Desça devagar até sentir alongar o peito.'],
+    tips:['Cotovelos a ~45° do tronco.','Não deixe os halteres caírem para fora no fundo.']},
+  'crucifixo inclinado': {img:'Incline_Dumbbell_Flyes', musc:['Peitoral superior'],
+    steps:['Banco inclinado a ~30°, halteres acima do peito com palmas frente a frente.','Cotovelos levemente flexionados e fixos.','Abra os braços em arco até sentir alongar o peito.','Feche em arco até os halteres quase se encontrarem.'],
+    tips:['Carga moderada: o foco é o alongamento, não o peso.','Não transforme em supino dobrando os cotovelos.']},
+  'flexao': {img:'Pushups', musc:['Peitoral','Tríceps','Core'],
+    steps:['Mãos um pouco além da largura dos ombros, corpo reto da cabeça aos pés.','Desça o peito até perto do chão, cotovelos a ~45°.','Empurre o chão até estender os braços.'],
+    tips:['Abdômen e glúteo contraídos: o quadril não cai.','Se ficar difícil, apoie os joelhos.']},
+  'remada unilateral': {img:'One-Arm_Dumbbell_Row', musc:['Dorsal','Romboides','Bíceps'],
+    steps:['Apoie joelho e mão do mesmo lado no banco; costas retas, paralelas ao chão.','Segure o halter com o braço estendido.','Puxe o halter em direção ao quadril, cotovelo junto ao corpo.','Desça devagar até estender o braço.'],
+    tips:['Não gire o tronco para subir o peso.','Pense em levar o cotovelo para o bolso de trás.']},
+  'remada': {img:'Bent_Over_Barbell_Row', musc:['Dorsal','Trapézio','Lombar'],
+    steps:['Segure a barra, joelhos levemente flexionados e tronco inclinado a ~45°.','Coluna neutra e abdômen firme.','Puxe a barra em direção ao umbigo, levando os cotovelos para trás.','Desça devagar até estender os braços.'],
+    tips:['Se a lombar arredondar, reduza a carga.','Mantenha o ângulo do tronco durante toda a série.']},
+  'desenvolvimento halteres': {img:'Dumbbell_Shoulder_Press', musc:['Deltoide anterior','Deltoide lateral','Tríceps'],
+    steps:['Sentado com encosto, halteres na altura das orelhas, palmas para frente.','Abdômen firme e costas apoiadas.','Empurre os halteres para cima até quase estender os braços.','Desça devagar até a altura das orelhas.'],
+    tips:['Não arqueie a lombar para empurrar.','Cotovelos levemente à frente do corpo, não totalmente abertos.']},
+  'rosca biceps': {img:'Dumbbell_Bicep_Curl', musc:['Bíceps','Braquial'],
+    steps:['Em pé, halteres ao lado do corpo, palmas para frente.','Cotovelos colados ao tronco.','Flexione os cotovelos subindo os halteres até os ombros.','Desça devagar até estender os braços.'],
+    tips:['Sem balançar o corpo.','Os cotovelos não vão para frente na subida.']},
+  'abdominal': {img:'Crunches', musc:['Reto abdominal'],
+    steps:['Deite com joelhos flexionados e pés no chão.','Mãos ao lado da cabeça, sem puxar o pescoço.','Suba o tronco enrolando a coluna até tirar as escápulas do chão.','Desça devagar.'],
+    tips:['Expire ao subir.','Pense em aproximar as costelas do quadril.']},
+  'prancha': {img:'Plank', musc:['Core','Ombros'],
+    steps:['Apoie antebraços e pontas dos pés, cotovelos abaixo dos ombros.','Corpo reto da cabeça aos calcanhares.','Contraia abdômen e glúteos e segure o tempo definido.'],
+    tips:['Quadril nem alto nem caído.','Respire normalmente durante a prancha.']},
+};
+
+// Nomes diferentes que apontam para o mesmo guia
+const EXERCISE_GUIDE_ALIAS = {
+  'barra fixa':'barra fixa pronada',
+  'supino inclinado':'supino inclinado halter',
+  'agachamento':'agachamento livre',
+  'flexora':'mesa flexora',
+  'cadeira abdutora':'abdutora',
+  'cadeira extensora':'extensora',
+  'puxada frontal':'puxada alta na polia',
+  'puxada alta':'puxada alta na polia',
+  'triceps corda':'triceps pulley',
+  'esteira':'corrida',
+};
+
+function normEx(n){ return String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function exMediaKey(name){ return 'exMedia_'+normEx(name).replace(/ /g,'_'); }
+function getExerciseGuide(name){
+  const k=normEx(name);
+  return EXERCISE_GUIDE[k] || EXERCISE_GUIDE[EXERCISE_GUIDE_ALIAS[k]] || null;
+}
+
+let howtoName=null, howtoTimer=null;
+
+function openHowTo(name){
+  name=name||getExByKey(sheetKey)?.name;
+  if(!name) return;
+  howtoName=name;
+  renderHowTo();
+  document.getElementById('howto-sheet').classList.add('open');
+}
+
+function closeHowTo(e){
+  if(e&&e.target!==document.getElementById('howto-sheet')) return;
+  document.getElementById('howto-sheet').classList.remove('open');
+  clearInterval(howtoTimer); howtoTimer=null;
+}
+
+function renderHowTo(){
+  const g=getExerciseGuide(howtoName);
+  const media=ld(exMediaKey(howtoName),{});
+  const imgs=media.photo ? [media.photo] : g ? [GUIDE_IMG_BASE+g.img+'/0.jpg', GUIDE_IMG_BASE+g.img+'/1.jpg'] : [];
+  document.getElementById('ht-title').textContent=howtoName;
+
+  const mediaHtml=imgs.length
+    ? `<div class="ht-media">${imgs.map((src,i)=>`<img class="ht-img${i===0?' on':''}" src="${src}" alt="" onerror="this.closest('.ht-media').classList.add('ht-failed')">`).join('')}
+        ${imgs.length>1?'<span class="ht-badge" id="ht-badge">Início</span>':''}
+        <div class="ht-fallback">Imagem indisponível sem internet</div></div>`
+    : `<button class="ht-media ht-empty" onclick="document.getElementById('ht-photo-input').click()">${ICON.plus}<span>Adicionar uma foto sua deste exercício</span></button>`;
+
+  const videoUrl=media.video || `https://www.youtube.com/results?search_query=${encodeURIComponent(howtoName+' execução correta')}`;
+  const body=g ? `
+      ${g.musc?.length?`<div class="ht-tags">${g.musc.map(m=>`<span>${m}</span>`).join('')}</div>`:''}
+      <div class="ht-sec">Passo a passo</div>
+      <ol class="ht-steps">${g.steps.map(t=>`<li>${t}</li>`).join('')}</ol>
+      ${g.tips?.length?`<div class="ht-sec">Dicas e erros comuns</div><ul class="ht-tips">${g.tips.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}`
+    : `<div class="ht-none">Ainda não há instruções escritas para este exercício. Use o vídeo abaixo ou adicione uma foto sua.</div>`;
+
+  document.getElementById('ht-body').innerHTML=`
+    ${mediaHtml}
+    ${body}
+    <a class="tr-cta ht-video" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener">▶ ${media.video?'Ver meu vídeo':'Ver vídeo no YouTube'}</a>
+    <div class="ht-sec">Personalizar</div>
+    <div class="ht-own">
+      <button class="sh-btn" onclick="document.getElementById('ht-photo-input').click()">${media.photo?'Trocar minha foto':'Usar minha foto'}</button>
+      <button class="sh-btn" onclick="setHowToVideo()">${media.video?'Trocar meu vídeo':'Usar meu vídeo'}</button>
+    </div>
+    ${media.photo||media.video?`<div class="ht-own-rm">${media.photo?'<button onclick="removeHowToMedia(\'photo\')">Remover minha foto</button>':''}${media.video?'<button onclick="removeHowToMedia(\'video\')">Remover meu vídeo</button>':''}</div>`:''}
+    ${!media.photo&&g?'<div class="ht-credit">Imagens: Free Exercise DB (domínio público)</div>':''}`;
+
+  // Alterna início/fim do movimento como um GIF simples
+  clearInterval(howtoTimer); howtoTimer=null;
+  if(imgs.length>1){
+    let f=0;
+    howtoTimer=setInterval(()=>{
+      const els=document.querySelectorAll('#ht-body .ht-img');
+      if(!els.length){ clearInterval(howtoTimer); return; }
+      f=1-f;
+      els.forEach((el,i)=>el.classList.toggle('on',i===f));
+      const b=document.getElementById('ht-badge'); if(b) b.textContent=f?'Fim':'Início';
+    },1300);
+  }
+}
+
+async function handleHowToPhoto(event){
+  const file=event.target.files?.[0];
+  event.target.value='';
+  if(!file||!howtoName) return;
+  try{
+    const photo=await resizeImageDataUrl(file,900,0.75);
+    const key=exMediaKey(howtoName);
+    sv(key,{...ld(key,{}),photo});
+    if(ld(key,{}).photo!==photo){ showToast('⚠️ Sem espaço no aparelho para salvar a foto'); return; }
+    renderHowTo();
+    showToast('📷 Foto salva');
+  }catch(e){ showToast('⚠️ '+(e.message||'Não consegui usar essa foto')); }
+}
+
+function setHowToVideo(){
+  const key=exMediaKey(howtoName);
+  const cur=ld(key,{});
+  const url=(prompt('Cole o link do vídeo (YouTube, Instagram, TikTok...)', cur.video||'')||'').trim();
+  if(!url) return;
+  if(!/^https?:\/\//i.test(url)){ showToast('⚠️ Link inválido'); return; }
+  sv(key,{...cur,video:url});
+  renderHowTo();
+  showToast('🔗 Vídeo salvo');
+}
+
+function removeHowToMedia(field){
+  const key=exMediaKey(howtoName);
+  const cur=ld(key,{});
+  delete cur[field];
+  sv(key,cur);
+  renderHowTo();
 }
 
 const ICON = {
@@ -3833,6 +4111,14 @@ function getAllBackupData(){
     customExercises,
     hiddenExercises,
     treinoTemplates,
+    exerciseMedia: (()=>{
+      const all={};
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k.startsWith('exMedia_')) all[k]=JSON.parse(localStorage.getItem(k)||'{}');
+      }
+      return all;
+    })(),
     coachMemory,
     checkinLog,
     coachMemory,
@@ -4026,6 +4312,9 @@ function importBackup(event){
       if(data.coachChatHistory) sv('coachChatHistory', data.coachChatHistory);
       if(data.foodLog){
         Object.entries(data.foodLog).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
+      }
+      if(data.exerciseMedia){
+        Object.entries(data.exerciseMedia).forEach(([k,v])=> sv(k, v));
       }
       if(data.supplementLog){
         Object.entries(data.supplementLog).forEach(([k,v])=> localStorage.setItem(k, JSON.stringify(v)));
@@ -4252,7 +4541,7 @@ const pendingWrites=new Map();
 let flushTimer=null;
 let isFlushing=false;
 const exact=new Set(['workoutHistory','weightLog','weeklyPlan','treinoTemplates','savedExerciseLibrary','coachMemory','coachChatHistory','checkinLog']);
-const prefixes=['foodLog_','activeTreino_','exChecked_','exSeries_','customExercises_','hiddenExercises_'];
+const prefixes=['foodLog_','activeTreino_','exChecked_','exSeries_','customExercises_','hiddenExercises_','exMedia_'];
 const shouldSync=k=>exact.has(k)||prefixes.some(p=>k.startsWith(p));
 const safeId=k=>encodeURIComponent(k).replaceAll('%','_');
 const col=uid=>collection(db,'users',uid,'data');

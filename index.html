@@ -175,6 +175,45 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .tr-empty{text-align:center;color:var(--text2);font-size:14px;line-height:1.5;padding:24px 10px;}
 .tr-empty svg{width:14px;height:14px;vertical-align:-2px;}
 
+/* HISTÓRICO */
+.hist-head{margin:2px 0 14px;}
+.seg{display:flex;background:var(--bg3);border-radius:12px;padding:3px;margin-bottom:16px;}
+.seg-btn{flex:1;padding:8px 0;border:none;border-radius:9px;background:none;color:var(--text2);font-size:14px;font-weight:500;font-family:var(--font);cursor:pointer;transition:background .15s,color .15s;}
+.seg-btn.on{background:var(--bg5);color:var(--text);}
+.hist-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--bg2);border-radius:22px;padding:16px 10px;margin-bottom:16px;text-align:center;}
+.hist-stat-num{font-family:var(--display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;}
+.hist-stat-lbl{font-size:12px;color:var(--text2);margin-top:2px;}
+.pills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 14px;padding:0 16px;}
+.pills:empty{display:none;}
+.pills::-webkit-scrollbar{display:none;}
+.pill{flex-shrink:0;padding:7px 14px;border-radius:999px;border:none;background:var(--bg3);color:var(--text2);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;}
+.pill.on{background:var(--accent);color:var(--accent-ink);}
+.hl-list{margin-bottom:18px;}
+.hl-row{min-height:62px;}
+.hl-day{width:38px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;line-height:1.1;}
+.hl-day b{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;}
+.hl-day small{font-size:11px;color:var(--text3);text-transform:uppercase;}
+.hl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 0;}
+.hl-title{font-size:15px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hl-sub{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;}
+.spark{flex-shrink:0;}
+.trend{flex-shrink:0;font-size:12px;font-weight:600;padding:3px 8px;border-radius:8px;font-variant-numeric:tabular-nums;}
+.trend.up{background:rgba(207,255,82,0.14);color:var(--accent);}
+.trend.down{background:rgba(255,107,92,0.14);color:var(--red);}
+.ss-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0;}
+.ss-stats div{background:var(--bg3);border-radius:14px;padding:10px 0;text-align:center;}
+.ss-stats b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;}
+.ss-stats span{font-size:12px;color:var(--text2);}
+#ss-list{display:flex;flex-direction:column;gap:10px;}
+#sess-sheet .modal{max-height:88dvh;}
+.ss-del{width:100%;margin-top:16px;padding:14px;border:none;border-radius:14px;background:rgba(255,107,92,0.12);color:var(--red);font-size:15px;font-weight:600;font-family:var(--font);cursor:pointer;}
+.hs-chart{background:var(--bg3);border-radius:16px;padding:12px 14px 8px;}
+.hs-chart-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.hs-chart-big{font-family:var(--display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;}
+.hs-chart-big small{font-size:13px;font-weight:400;color:var(--text2);}
+.hs-chart-svg{width:100%;height:96px;display:block;margin-top:4px;}
+.hs-chart-dates{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);}
+
 /* PAINEL DO EXERCÍCIO (bottom sheet) */
 .modal{border-radius:26px 26px 0 0;}
 .modal-overlay.open .modal{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);}
@@ -624,20 +663,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
     <!-- ══ HISTÓRICO ══ -->
     <div class="screen" id="sc-hist">
-      <div class="view-tabs">
-        <button class="view-tab on" onclick="showHistView('sessions',this)">Sessões</button>
-        <button class="view-tab" onclick="showHistView('progress',this)">Progressão</button>
+      <div class="hist-head">
+        <div class="tr-name">Histórico</div>
+        <div class="tr-date" id="hist-count">—</div>
+      </div>
+      <div class="seg" id="hist-seg">
+        <button class="seg-btn on" data-v="sessions" onclick="showHistView('sessions')">Treinos</button>
+        <button class="seg-btn" data-v="progress" onclick="showHistView('progress')">Evolução</button>
       </div>
 
       <div id="hist-sessions">
-        <div class="htabs" id="htabs"></div>
-        <div id="session-list"><p class="empty">Nenhum treino registrado ainda.</p></div>
+        <div id="hist-summary"></div>
+        <div class="pills" id="htabs"></div>
+        <div id="session-list"></div>
       </div>
 
       <div id="hist-progress" style="display:none;">
-        <div class="stit">Evolução por exercício</div>
-        <div class="htabs" id="muscle-tabs"></div>
-        <div id="prog-list"><p class="empty">Treine para ver sua progressão aqui.</p></div>
+        <div class="pills" id="muscle-tabs"></div>
+        <div id="prog-list"></div>
       </div>
     </div>
 
@@ -874,6 +917,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
+<!-- ══ DETALHE DE UM TREINO DO HISTÓRICO ══ -->
+<div class="modal-overlay" id="sess-sheet" onclick="closeSessSheet(event)">
+  <div class="modal sheet">
+    <div class="sheet-handle" onclick="closeSessSheet()"></div>
+    <div class="sh-hdr">
+      <div style="min-width:0;">
+        <div class="sh-name" id="ss-title">—</div>
+        <div class="sh-meta" id="ss-sub">—</div>
+      </div>
+      <button class="icon-btn" onclick="closeSessSheet()" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="ss-stats" id="ss-stats"></div>
+    <div id="ss-list"></div>
+    <button class="ss-del" id="ss-del">Excluir este treino</button>
+  </div>
+</div>
+
 <!-- ══ HISTÓRICO DO EXERCÍCIO (abre por cima do painel) ══ -->
 <div class="modal-overlay" id="hist-sheet" onclick="closeHistSheet(event)">
   <div class="modal sheet">
@@ -964,7 +1024,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Digite seu peso de hoje em kg.</p>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
-      <input class="qty-inp" type="number" id="weight-inp" placeholder="Ex: 78.5" step="0.1" min="30" max="250" style="flex:1;font-size:20px;padding:12px;">
+      <input class="qty-inp" type="text" inputmode="decimal" id="weight-inp" placeholder="Ex: 78,5" autocomplete="off" style="flex:1;font-size:20px;padding:12px;" onkeydown="if(event.key==='Enter')saveWeight()">
       <span style="font-size:15px;color:var(--text2);">kg</span>
     </div>
     <div id="weight-history-list" style="margin-bottom:12px;"></div>
@@ -1683,9 +1743,13 @@ function getStartOfWeek(date){
   d.setDate(d.getDate()-day);
   return d;
 }
+// As datas do peso ficam como DD-MM-AAAA; new Date() lê isso errado, então usamos parseDateKey.
+function weightTime(w){ const t=parseDateKey(String(w?.date||'').replace(/\//g,'-')).getTime(); return isNaN(t)?0:t; }
+function getSortedWeights(){
+  return (Array.isArray(weightLog)?weightLog:[]).filter(w=>w&&parseFloat(w.weight)>0).sort((a,b)=>weightTime(b)-weightTime(a));
+}
 function getLatestWeight(){
-  if(!Array.isArray(weightLog) || !weightLog.length) return null;
-  return [...weightLog].sort((a,b)=> new Date(b.date)-new Date(a.date))[0];
+  return getSortedWeights()[0]||null;
 }
 function getSessionsForWeek(startDate){
   const end=new Date(startDate); end.setDate(end.getDate()+6);
@@ -1710,9 +1774,9 @@ function openTodayWorkout(){
 }
 function openWeightModal(){
   const latest=getLatestWeight();
-  document.getElementById('weight-inp').value=latest?latest.weight:'';
+  document.getElementById('weight-inp').value=latest?String(latest.weight).replace('.',','):'';
   // Show last 5 entries
-  const recent=[...weightLog].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  const recent=getSortedWeights().slice(0,5);
   document.getElementById('weight-history-list').innerHTML=recent.length
     ?`<div class="stit" style="margin-top:0;margin-bottom:6px;">Últimos registros</div>`+
       recent.map(w=>`<div class="prog-row">
@@ -1732,7 +1796,7 @@ function closeWeightModal(e){
 function saveWeight(){
   const val=parseFloat(String(document.getElementById('weight-inp').value).replace(',','.'));
   if(!val||val<30||val>250){showToast('⚠️ Digite um peso válido');return;}
-  const todayKey=dateKeyFromDate(realToday);
+  const todayKey=dateKeyFromDate(new Date());
   weightLog=Array.isArray(weightLog)?weightLog.filter(w=>w.date!==todayKey):[];
   weightLog.push({date:todayKey,weight:val});
   sv('weightLog',weightLog);
@@ -2190,11 +2254,11 @@ function resetTpl(){
 }
 
 // Sessões anteriores de um exercício (mais recentes primeiro), sem contar o dia selecionado.
-function getExerciseHistory(exName, limit=5){
+function getExerciseHistory(exName, limit=5, skipSelected=true){
   const out=[];
   const sorted=[...dedupeWorkoutHistory(workoutHistory)].sort((a,b)=> parseDateKey(b.selectedDateKey||'01-01-2000') - parseDateKey(a.selectedDateKey||'01-01-2000'));
   for(const s of sorted){
-    if(s.selectedDateKey===selectedDateKey) continue;
+    if(skipSelected && s.selectedDateKey===selectedDateKey) continue;
     const ex=(s.exercicios||[]).find(x=>x.name===exName);
     const series=(ex?.series||[]).filter(sr=>sr.peso||sr.reps);
     if(!series.length) continue;
@@ -2357,13 +2421,17 @@ function renderSheetHistory(ex){
   </button>`;
 }
 
-function openHistSheet(){
-  const ex=getExByKey(sheetKey);
-  if(!ex) return;
-  const cardio=ex.inputMode==='cardio';
-  const hist=getExerciseHistory(ex.name,30);
-  document.getElementById('hs-sub').textContent=`${ex.name} · ${hist.length} treino${hist.length>1?'s':''}`;
-  document.getElementById('hs-list').innerHTML=hist.map((h,idx)=>{
+// Sem argumentos: abre o histórico do exercício aberto no painel. Pela aba Evolução, recebe o nome e mostra o gráfico.
+function openHistSheet(name, cardio, withChart=false){
+  if(!name){
+    const ex=getExByKey(sheetKey);
+    if(!ex) return;
+    name=ex.name; cardio=ex.inputMode==='cardio';
+  }
+  const hist=getExerciseHistory(name,30,!withChart);
+  document.getElementById('hs-sub').textContent=`${name} · ${hist.length} treino${hist.length>1?'s':''}`;
+  const chart=(withChart && !cardio) ? buildWeightChart(hist) : '';
+  document.getElementById('hs-list').innerHTML=chart+hist.map((h,idx)=>{
     const date=parseDateKey(h.dateKey);
     const wd=WEEKDAY_SHORT[date.getDay()];
     const rel=relDayLabel(h.dateKey);
@@ -2652,56 +2720,150 @@ function finalizarTreino(){
 // ═══════════════════════════════════════════════════════════
 // HISTÓRICO
 // ═══════════════════════════════════════════════════════════
-function showHistView(v,btn){
+function sessionDateKey(s){ return s.selectedDateKey || String(s.date||'').replace(/\//g,'-'); }
+function numVal(v){ return parseFloat(String(v||'').replace(',','.'))||0; }
+function isCardioExercise(name){
+  const all=[...Object.values(TREINOS).flatMap(t=>t.exs||[]), ...(savedExerciseLibrary||[])];
+  const m=all.find(e=>(e.name||'').toLowerCase()===(name||'').toLowerCase());
+  return m ? m.inputMode==='cardio' : /corrida|bicicleta|esteira|cardio/i.test(name||'');
+}
+function sessionStats(s){
+  let sets=0, vol=0, exs=0;
+  (s.exercicios||[]).forEach(e=>{
+    const ss=(e.series||[]).filter(x=>x.peso||x.reps);
+    if(ss.length||e.feito) exs++;
+    sets+=ss.length;
+    if(!isCardioExercise(e.name)) ss.forEach(x=>{ vol+=numVal(x.peso)*(parseInt(x.reps,10)||0); });
+  });
+  return {exs,sets,vol:Math.round(vol)};
+}
+function fmtVol(v){ return v>=1000 ? (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' t' : v+' kg'; }
+function capFirst(t){ return t ? t.charAt(0).toUpperCase()+t.slice(1) : t; }
+function getSortedSessions(){
+  return [...dedupeWorkoutHistory(workoutHistory)].sort((a,b)=>parseDateKey(sessionDateKey(b))-parseDateKey(sessionDateKey(a)) || (b.id||0)-(a.id||0));
+}
+
+// Mini gráfico de linha (valores em ordem cronológica)
+function sparkSvg(values,w=64,h=26){
+  if(values.length<2) return '';
+  const min=Math.min(...values), max=Math.max(...values), span=(max-min)||1;
+  const pts=values.map((v,i)=>[(i/(values.length-1))*(w-6)+3, h-3-((v-min)/span)*(h-6)]);
+  const last=pts[pts.length-1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><polyline points="${pts.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="var(--accent)"/></svg>`;
+}
+
+// Gráfico maior para o pop-up do exercício (melhor carga de cada treino)
+function buildWeightChart(hist){
+  const pts=[...hist].reverse().slice(-12).map(h=>({dateKey:h.dateKey, v:Math.max(...h.series.map(x=>numVal(x.peso)))})).filter(p=>p.v>0);
+  if(pts.length<2) return '';
+  const W=320,H=110, min=Math.min(...pts.map(p=>p.v)), max=Math.max(...pts.map(p=>p.v)), span=(max-min)||1;
+  const xy=pts.map((p,i)=>[(i/(pts.length-1))*(W-24)+12, H-22-((p.v-min)/span)*(H-44)]);
+  const diff=pts[pts.length-1].v-pts[0].v;
+  const fmt=k=>{const [d,m]=k.split('-');return `${d}/${m}`;};
+  return `<div class="hs-chart">
+    <div class="hs-chart-top"><div><div class="sh-last-lbl">Melhor carga</div><div class="hs-chart-big">${String(max).replace('.',',')} <small>kg</small></div></div>
+    ${diff?`<span class="trend ${diff>0?'up':'down'}">${diff>0?'+':''}${String(diff).replace('.',',')} kg em ${pts.length} treinos</span>`:''}</div>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="hs-chart-svg">
+      <line x1="0" y1="${H-14}" x2="${W}" y2="${H-14}" stroke="var(--bg4)"/>
+      <polyline points="${xy.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="hs-chart-dates"><span>${fmt(pts[0].dateKey)}</span><span>${fmt(pts[pts.length-1].dateKey)}</span></div>
+  </div>`;
+}
+
+function showHistView(v){
   histView=v;
-  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+  document.querySelectorAll('#hist-seg .seg-btn').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
   document.getElementById('hist-sessions').style.display=v==='sessions'?'block':'none';
   document.getElementById('hist-progress').style.display=v==='progress'?'block':'none';
   if(v==='progress') renderProgression();
 }
 
 function renderHistTabs(){
-  const keys=['ALL',...Object.keys(TREINOS)];
-  const labels={ALL:'Todos',UPPER_A:'Upper A',LOWER_A:'Lower A',UPPER_B:'Upper B',LOWER_B:'Lower B',TREINO_LIVRE:'Treino Livre',CARDIO:'Cardio'};
-  document.getElementById('htabs').innerHTML=keys.map(k=>
-    `<button class="htab${histFilter===k?' on':''}" onclick="filterHist('${k}',this)">${labels[k]||k}</button>`).join('');
+  const used=new Set(dedupeWorkoutHistory(workoutHistory).map(s=>s.treino));
+  const keys=['ALL',...Object.keys(TREINOS).filter(k=>used.has(k))];
+  if(!keys.includes(histFilter)) histFilter='ALL';
+  document.getElementById('htabs').innerHTML=keys.length>2 ? keys.map(k=>
+    `<button class="pill${histFilter===k?' on':''}" onclick="filterHist('${k}')">${k==='ALL'?'Todos':TREINOS[k].label}</button>`).join('') : '';
 }
 
-function filterHist(f,btn){
+function filterHist(f){
   histFilter=f;
-  document.querySelectorAll('.htab').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+  renderHistTabs();
   renderSessions();
 }
 
 function renderSessions(){
+  const all=getSortedSessions();
+  document.getElementById('hist-count').textContent=all.length ? `${all.length} treino${all.length>1?'s':''} registrado${all.length>1?'s':''}` : 'Nenhum treino ainda';
+
+  // Resumo do mês atual
+  const now=new Date();
+  const month=all.filter(s=>{const d=parseDateKey(sessionDateKey(s)); return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();});
+  const tot=month.reduce((t,s)=>{const st=sessionStats(s); t.sets+=st.sets; t.vol+=st.vol; return t;},{sets:0,vol:0});
+  document.getElementById('hist-summary').innerHTML=all.length ? `<div class="hist-stats">
+      <div><div class="hist-stat-num">${month.length}</div><div class="hist-stat-lbl">treinos no mês</div></div>
+      <div><div class="hist-stat-num">${tot.sets}</div><div class="hist-stat-lbl">séries</div></div>
+      <div><div class="hist-stat-num">${fmtVol(tot.vol)}</div><div class="hist-stat-lbl">volume</div></div>
+    </div>` : '';
+
   const el=document.getElementById('session-list');
-  let sessions=dedupeWorkoutHistory(workoutHistory);
-  sessions=histFilter==='ALL'?sessions:sessions.filter(s=>s.treino===histFilter);
-  if(!sessions.length){el.innerHTML='<p class="empty">Nenhum treino registrado ainda.</p>';return;}
-  el.innerHTML=sessions.map(s=>`
-    <div class="hsession">
-      <div class="hsession-hdr">
-        <span class="hsession-name">${s.label}</span>
-        <div class="hsession-actions">
-          <span class="hsession-date">${s.date}</span>
-          <button class="hsession-del" onclick="deleteSession(${s.id})" title="Excluir sessão">×</button>
-        </div>
-      </div>
-      ${s.exercicios.map(e=>{
-        const chips=(e.series||[]).filter(sr=>sr.reps||sr.peso).map((sr,i)=>{
-          const isCardio = /corrida|bicicleta/i.test(e.name||'');
-          const peso = sr.peso ? (isCardio ? sr.peso+'km' : sr.peso+'kg') : '—';
-          const reps = sr.reps ? (isCardio ? sr.reps+'min' : sr.reps) : '—';
-          return `<span class="hex-chip">S${i+1}: ${peso} × ${reps}</span>`;
-        }).join('');
-        const obs=e.series?.[0]?.obs;
-        return `<div class="hex">
-          <div class="hex-name">${e.name}${e.feito&&!chips?' <span style="font-size:11px;color:var(--accent2);">✓</span>':''}</div>
-          ${chips?`<div class="hex-chips">${chips}</div>`:'<div class="hex-chips"><span class="hex-chip">Sem carga registrada</span></div>'}
-          ${obs?`<div class="hex-obs">${obs}</div>`:''}
-        </div>`;
-      }).join('')}
-    </div>`).join('');
+  const sessions=histFilter==='ALL'?all:all.filter(s=>s.treino===histFilter);
+  if(!sessions.length){ el.innerHTML='<div class="tr-empty">Seus treinos finalizados aparecem aqui.</div>'; return; }
+
+  const groups=[];
+  sessions.forEach(s=>{
+    const d=parseDateKey(sessionDateKey(s));
+    const key=`${d.getFullYear()}-${d.getMonth()}`;
+    let g=groups.find(x=>x.key===key);
+    if(!g){ g={key, label:capFirst(d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'})), items:[]}; groups.push(g); }
+    g.items.push(s);
+  });
+
+  el.innerHTML=groups.map(g=>`<div class="tr-sec">${g.label}</div><div class="tr-list hl-list">${g.items.map(s=>{
+    const d=parseDateKey(sessionDateKey(s));
+    const st=sessionStats(s);
+    return `<button class="tr-row hl-row" onclick="openSessSheet(${s.id})">
+      <span class="hl-day"><b>${d.getDate()}</b><small>${WEEKDAY_SHORT[d.getDay()]}</small></span>
+      <span class="hl-main"><span class="hl-title">${escapeHtml(s.label||TREINOS[s.treino]?.label||'Treino')}</span>
+      <span class="hl-sub">${st.exs} exercício${st.exs!==1?'s':''} · ${st.sets} série${st.sets!==1?'s':''}${st.vol?' · '+fmtVol(st.vol):''}</span></span>
+      <span class="tr-row-chev">${ICON.chev}</span>
+    </button>`;}).join('')}</div>`).join('');
+}
+
+function openSessSheet(id){
+  const s=workoutHistory.find(x=>x.id===id);
+  if(!s) return;
+  const d=parseDateKey(sessionDateKey(s));
+  const st=sessionStats(s);
+  document.getElementById('ss-title').textContent=s.label||TREINOS[s.treino]?.label||'Treino';
+  document.getElementById('ss-sub').textContent=capFirst(d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}));
+  document.getElementById('ss-stats').innerHTML=`
+    <div><b>${st.exs}</b><span>exercícios</span></div>
+    <div><b>${st.sets}</b><span>séries</span></div>
+    <div><b>${st.vol?fmtVol(st.vol):'—'}</b><span>volume</span></div>`;
+  document.getElementById('ss-list').innerHTML=(s.exercicios||[]).map(e=>{
+    const cardio=isCardioExercise(e.name);
+    const ss=(e.series||[]).filter(x=>x.peso||x.reps);
+    const obs=(e.series||[]).find(x=>x.obs)?.obs;
+    const rows=ss.length ? ss.map((sr,i)=>`<div class="hs-set">
+        <span class="hs-set-n">${i+1}</span>
+        <span class="hs-set-v">${sr.peso||'—'}<small>${cardio?' km':' kg'}</small></span>
+        <span class="hs-set-x">×</span>
+        <span class="hs-set-v">${sr.reps||'—'}<small>${cardio?' min':' reps'}</small></span>
+      </div>`).join('') : '<div class="hs-obs" style="font-style:normal;">Feito, sem carga registrada</div>';
+    return `<div class="hs-card"><div class="hs-card-hdr"><span class="hs-date">${escapeHtml(e.name)}</span></div>${rows}${obs?`<div class="hs-obs">${escapeHtml(obs)}</div>`:''}</div>`;
+  }).join('');
+  document.getElementById('ss-del').onclick=()=>{
+    deleteSession(id);
+    if(!workoutHistory.some(x=>x.id===id)) closeSessSheet();
+  };
+  document.getElementById('sess-sheet').classList.add('open');
+}
+
+function closeSessSheet(e){
+  if(e&&e.target!==document.getElementById('sess-sheet')) return;
+  document.getElementById('sess-sheet').classList.remove('open');
 }
 
 function deleteSession(sessionId){
@@ -2710,6 +2872,7 @@ function deleteSession(sessionId){
   if(!confirm(`Excluir o treino ${session.label} de ${session.date}?`)) return;
   workoutHistory = workoutHistory.filter(s => s.id !== sessionId);
   sv('workoutHistory', workoutHistory);
+  renderHistTabs();
   renderSessions();
   renderProgression();
 }
@@ -2755,7 +2918,7 @@ function exMatchesMuscle(name, muscle){
 function renderMuscleTabs(){
   const muscles = Object.keys(MUSCLE_TAGS).sort((a,b)=> a==='Todos'?-1:b==='Todos'?1:a.localeCompare(b,'pt'));
   document.getElementById('muscle-tabs').innerHTML = muscles.map(m=>
-    `<button class="htab${progMuscleFilter===m?' on':''}" onclick="filterMuscle('${m}')">${m}</button>`
+    `<button class="pill${progMuscleFilter===m?' on':''}" onclick="filterMuscle('${m}')">${m}</button>`
   ).join('');
 }
 
@@ -2765,53 +2928,52 @@ function filterMuscle(m){
   renderProgression();
 }
 
-let openProgCard = null;
+let progItems = [];
 
 function renderProgression(){
   renderMuscleTabs();
   const el=document.getElementById('prog-list');
   const exMap={};
-  [...dedupeWorkoutHistory(workoutHistory)].reverse().forEach(s=>{
-    s.exercicios.forEach(e=>{
-      if(!e.series?.length) return;
+  [...getSortedSessions()].reverse().forEach(s=>{
+    (s.exercicios||[]).forEach(e=>{
+      const ss=(e.series||[]).filter(x=>x.peso||x.reps);
+      if(!ss.length) return;
       if(!exMap[e.name]) exMap[e.name]=[];
-      const best=e.series.reduce((b,sr)=>parseFloat(sr.peso||0)>=parseFloat(b.peso||0)?sr:b,e.series[0]);
-      const vol=e.series.reduce((t,sr)=>t+(parseFloat(sr.peso||0)*parseFloat(sr.reps||0)),0);
-      if(best.peso||best.reps) exMap[e.name].push({date:s.date,peso:best.peso,reps:best.reps,vol:Math.round(vol)});
+      const best=ss.reduce((b,x)=>numVal(x.peso)>=numVal(b.peso)?x:b,ss[0]);
+      exMap[e.name].push({peso:numVal(best.peso), reps:best.reps});
     });
   });
 
-  // Filter by muscle
   const filtered=Object.entries(exMap)
     .filter(([name])=>exMatchesMuscle(name,progMuscleFilter))
     .sort(([a],[b])=>a.localeCompare(b,'pt'));
 
   if(!filtered.length){
-    el.innerHTML='<p class="empty">Nenhum exercício encontrado.</p>';
+    el.innerHTML='<div class="tr-empty">Finalize treinos para acompanhar sua evolução aqui.</div>';
     return;
   }
 
-  el.innerHTML=filtered.map(([name,records])=>{
-    const allWeights=records.map(r=>parseFloat(r.peso||0)).filter(v=>v>0);
-    const pr=allWeights.length?Math.max(...allWeights):null;
-    const rows=records.slice(-5).reverse().map(r=>{
-      const isPR=pr&&parseFloat(r.peso||0)===pr;
-      return `<div class="prog-row">
-        <span class="prog-date">${r.date}</span>
-        <span class="${isPR?'prog-best':'prog-val'}">
-          ${r.peso?r.peso+'kg':'—'} × ${r.reps||'—'}${isPR?' 🏆':''}
-          ${r.vol>0?`<span style="color:var(--text3);font-size:10px;margin-left:4px;">vol ${r.vol}</span>`:''}
-        </span>
-      </div>`;
-    }).join('');
-    return `<div class="prog-ex-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <div class="prog-ex-name" style="margin:0;">${name}</div>
-        ${pr?`<span style="font-size:11px;color:var(--amber);font-family:var(--mono);">PR ${pr}kg</span>`:''}
-      </div>
-      ${rows}
-    </div>`;
-  }).join('');
+  progItems=filtered.map(([name])=>({name, cardio:isCardioExercise(name)}));
+  el.innerHTML=`<div class="tr-list hl-list">${filtered.map(([name,recs],i)=>{
+    const cardio=progItems[i].cardio;
+    const weights=recs.map(r=>r.peso).filter(v=>v>0);
+    const pr=weights.length?Math.max(...weights):0;
+    const prRec=recs.find(r=>r.peso===pr);
+    const diff=recs.length>1 ? recs[recs.length-1].peso-recs[recs.length-2].peso : 0;
+    const sub=cardio ? `${recs.length} treino${recs.length>1?'s':''}`
+      : (pr?`Recorde ${String(pr).replace('.',',')} kg × ${prRec?.reps||'—'}`:'Sem carga')+` · ${recs.length} treino${recs.length>1?'s':''}`;
+    return `<button class="tr-row hl-row" onclick="openProgHist(${i})">
+      <span class="hl-main"><span class="hl-title">${escapeHtml(name)}</span><span class="hl-sub">${sub}</span></span>
+      ${cardio?'':sparkSvg(weights.slice(-8))}
+      ${!cardio&&diff?`<span class="trend ${diff>0?'up':'down'}">${diff>0?'+':''}${String(diff).replace('.',',')}</span>`:''}
+      <span class="tr-row-chev">${ICON.chev}</span>
+    </button>`;
+  }).join('')}</div>`;
+}
+
+function openProgHist(i){
+  const it=progItems[i];
+  if(it) openHistSheet(it.name, it.cardio, true);
 }
 
 // ═══════════════════════════════════════════════════════════

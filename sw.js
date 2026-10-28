@@ -1,4 +1,4 @@
-const CACHE='minha-saude-v13';
+const CACHE='minha-saude-v15';
 const IMG_CACHE='minha-saude-exercicios-v1';
 const FILES=['./','./index.html','./manifest.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting();});

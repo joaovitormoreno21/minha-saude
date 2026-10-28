@@ -240,6 +240,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ht-own{display:flex;gap:8px;}
 .ht-own-rm{display:flex;gap:16px;justify-content:center;margin-top:10px;}
 .ht-own-rm button{background:none;border:none;color:var(--red);font-size:13px;font-family:var(--font);cursor:pointer;}
+.ht-sheet-photo{position:relative;display:block;margin-top:14px;border-radius:18px;overflow:hidden;background:var(--bg3);min-height:120px;}
+.ht-sheet-photo img{display:block;width:100%;height:auto;}
+.ht-zoom{position:absolute;right:10px;bottom:10px;padding:4px 10px;border-radius:999px;background:rgba(15,17,20,0.75);color:#fff;font-size:11px;font-weight:600;}
+.ht-presc{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(207,255,82,0.10);}
+.ht-presc span{font-size:13px;color:var(--text2);}
+.ht-presc b{font-size:17px;color:var(--accent);font-variant-numeric:tabular-nums;}
+.ht-errors li::before{background:var(--red);}
 .ht-credit{margin-top:14px;text-align:center;font-size:11px;color:var(--text3);}
 
 /* PAINEL DO EXERCÍCIO (bottom sheet) */
@@ -1199,10 +1206,10 @@ const TREINOS = {
         id:'UPPER_A_0',
         icon:'🏋️',
         name:'Supino inclinado halter',
-        meta:'16x15 / 20x10 / 26x6-8 / 26x6-8 / 24x8-10',
+        meta:'3 × 6–10',
         tags:['peito','forca'],
         rest:'2–3 min',
-        defaultSeries:5
+        defaultSeries:3
       },
 
       {
@@ -1219,7 +1226,7 @@ const TREINOS = {
         id:'UPPER_A_2',
         icon:'🦾',
         name:'Remada máquina',
-        meta:'60x10 / 65x8 / 65x8',
+        meta:'3 × 8–12',
         tags:['costas'],
         rest:'2 min',
         defaultSeries:3
@@ -1229,20 +1236,20 @@ const TREINOS = {
         id:'UPPER_A_3',
         icon:'💪',
         name:'Chest Press',
-        meta:'55x10 / 60x8 / 60x8',
+        meta:'2 × 8–12',
         tags:['peito'],
         rest:'90 s',
-        defaultSeries:3
+        defaultSeries:2
       },
 
       {
         id:'UPPER_A_4',
         icon:'💪',
         name:'Elevação lateral',
-        meta:'10x15 / 10x12 + DROP',
+        meta:'3 × 12–20',
         tags:['ombro'],
         rest:'60 s',
-        defaultSeries:2
+        defaultSeries:3
       },
 
       {
@@ -1353,7 +1360,7 @@ const TREINOS = {
         id:'UPPER_B_1',
         icon:'🦾',
         name:'Puxada alta na polia',
-        meta:'45x12 / 52x10 / 55x8',
+        meta:'3 × 8–12',
         tags:['costas'],
         rest:'2 min',
         defaultSeries:3
@@ -1363,7 +1370,7 @@ const TREINOS = {
         id:'UPPER_B_2',
         icon:'🦾',
         name:'Remada máquina',
-        meta:'45x10 / 50x10 / 50x10',
+        meta:'3 × 8–12',
         tags:['costas'],
         rest:'90 s',
         defaultSeries:3
@@ -1383,20 +1390,20 @@ const TREINOS = {
         id:'UPPER_B_4',
         icon:'💪',
         name:'Elevação lateral',
-        meta:'10x15 / 10x15 + DROP',
+        meta:'3 × 12–20',
         tags:['ombro'],
         rest:'60 s',
-        defaultSeries:2
+        defaultSeries:3
       },
 
       {
         id:'UPPER_B_5',
         icon:'💪',
         name:'Rosca Scott',
-        meta:'40x10 / 40x10 / 35x12',
+        meta:'2 × 8–12',
         tags:['biceps'],
         rest:'60 s',
-        defaultSeries:3
+        defaultSeries:2
       },
 
       {
@@ -1413,10 +1420,10 @@ const TREINOS = {
         id:'UPPER_B_7',
         icon:'💪',
         name:'Tríceps pulley',
-        meta:'40x10 / 40x10 / 35x12',
+        meta:'2 × 10–15',
         tags:['triceps'],
         rest:'60 s',
-        defaultSeries:3
+        defaultSeries:2
       },
 
       {
@@ -2333,18 +2340,18 @@ function renderExHistory(exName, isCardio){
 const GUIDE_IMG_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
 
 const EXERCISE_GUIDE = {
-  'supino inclinado halter': {img:'Incline_Dumbbell_Press', musc:['Peitoral superior','Ombro anterior','Tríceps'],
-    steps:['Ajuste o banco entre 30° e 45° e sente com os halteres apoiados nas coxas.','Deite levando os halteres à altura do peito, punhos alinhados sobre os cotovelos.','Empurre para cima e levemente para dentro até quase estender os braços.','Desça controlando (2–3 s) até sentir alongar o peito, cotovelos a ~45° do tronco.'],
-    tips:['Mantenha as escápulas retraídas e o peito “aberto” o tempo todo.','Não bata os halteres no topo; pare um pouco antes para manter tensão.','Pés firmes no chão e glúteo encostado no banco.']},
+  'supino inclinado halter': {img:'Incline_Dumbbell_Press', photo:'Fotos Exercicio/01_supino_inclinado.jpg', presc:'3 × 6–10', musc:['Peitoral superior','Tríceps (auxiliar)','Deltoide anterior (auxiliar)'],
+    steps:['Banco inclinado entre 30° e 45°.','Mantenha as escápulas apoiadas e estáveis.','Cotovelos ligeiramente abaixo da linha dos ombros.','Desça controlando, sentindo o alongamento do peito.','Suba concentrando a força no peitoral superior.'],
+    errors:['Banco muito inclinado.','Abrir demais os cotovelos.','Transformar em desenvolvimento de ombro.','Não controlar a descida.','Usar carga que rouba a técnica.']},
   'barra fixa pronada': {img:'Pullups', musc:['Dorsal','Bíceps','Romboides'],
     steps:['Segure a barra com as palmas para frente, mãos um pouco além da largura dos ombros.','Comece pendurado, braços estendidos e ombros “encaixados” (sem relaxar).','Puxe levando o peito em direção à barra, cotovelos apontando para baixo.','Suba até o queixo passar a barra e desça devagar até estender os braços.'],
     tips:['Evite balançar o corpo ou chutar as pernas para subir.','Pense em puxar com os cotovelos, não com as mãos.','Amplitude completa vale mais que repetição extra pela metade.']},
   'remada maquina': {img:'Leverage_Iso_Row', musc:['Dorsal','Romboides','Trapézio médio','Bíceps'],
     steps:['Ajuste o banco para que as pegadas fiquem na altura do meio do peito.','Apoie o peito no suporte e segure as pegadas com os braços estendidos.','Puxe levando os cotovelos para trás, junto ao corpo, e aperte as escápulas no final.','Volte devagar até alongar as costas, sem soltar o peso.'],
     tips:['Não tire o peito do apoio para “roubar” a repetição.','Ombros longe das orelhas durante toda a puxada.','Segure 1 s na contração máxima.']},
-  'chest press': {img:'Leverage_Chest_Press', musc:['Peitoral','Ombro anterior','Tríceps'],
-    steps:['Ajuste o banco para que as pegadas fiquem na linha do meio do peito.','Costas e cabeça apoiadas, escápulas juntas e peito aberto.','Empurre até quase estender os cotovelos, sem travar.','Volte controlando até sentir o peito alongar.'],
-    tips:['Cotovelos levemente abaixo da linha dos ombros (~45–60°).','Não desencoste as costas do banco no final do movimento.']},
+  'chest press': {img:'Leverage_Chest_Press', photo:'Fotos Exercicio/04_chest_press_convergente.jpg', presc:'2 × 8–12', musc:['Peitoral médio','Tríceps (auxiliar)','Deltoide anterior (auxiliar)'],
+    steps:['Ajuste o banco para as alças ficarem na altura do meio do peito.','Mantenha as escápulas apoiadas.','Empurre e aproxime as alças à frente, sem bater.','Controle a volta, sentindo o alongamento do peito.'],
+    errors:['Banco muito alto ou baixo.','Não controlar a volta.','Travar os cotovelos no final.','Usar carga excessiva.','Sentir mais ombro do que peito.']},
   'supino reto maquina': {img:'Machine_Bench_Press', musc:['Peitoral','Ombro anterior','Tríceps'],
     steps:['Ajuste o assento para a pegada ficar na altura do meio do peito.','Escápulas retraídas, costas apoiadas e pés firmes no chão.','Empurre até quase estender os braços.','Retorne devagar até o ponto de alongamento do peito.'],
     tips:['Controle a descida (2–3 s): é onde está boa parte do estímulo.','Não deixe os ombros subirem em direção às orelhas.']},
@@ -2381,21 +2388,21 @@ const EXERCISE_GUIDE = {
   'panturrilha em pe': {img:'Standing_Calf_Raises', musc:['Gastrocnêmio','Sóleo'],
     steps:['Ombros sob os apoios e ponta dos pés na plataforma, joelhos estendidos (sem travar).','Deixe os calcanhares descerem até alongar bem.','Suba na ponta dos pés o máximo possível e contraia 1 s.','Desça controlando.'],
     tips:['Joelhos fixos: o movimento é só no tornozelo.','Pausa de 1–2 s embaixo elimina o efeito “mola”.']},
-  'puxada alta na polia': {img:'Wide-Grip_Lat_Pulldown', musc:['Dorsal','Bíceps','Romboides'],
-    steps:['Ajuste o apoio das coxas e segure a barra com pegada aberta, palmas para frente.','Incline levemente o tronco para trás, peito aberto.','Puxe a barra até a parte de cima do peito levando os cotovelos para baixo e para trás.','Volte devagar até estender os braços, sem soltar os ombros totalmente.'],
-    tips:['Não puxe atrás da nuca.','Evite jogar o tronco para trás para mover a carga.']},
+  'puxada alta na polia': {img:'Wide-Grip_Lat_Pulldown', photo:'Fotos Exercicio/02_puxada_alta_pronada.jpg', presc:'3 × 8–12', musc:['Latíssimo do dorso','Bíceps (auxiliar)','Romboides (auxiliar)'],
+    steps:['Pegada na largura dos ombros ou um pouco mais aberta.','Pense em levar os cotovelos para baixo.','Mantenha o peito elevado e o tronco estável.','Desça a barra até a parte superior do peito.','Controle a subida, sem balançar o tronco.'],
+    errors:['Puxar a barra atrás da nuca.','Jogar o tronco para trás.','Usar muito impulso.','Não alongar completamente na subida.','Encolher os ombros.']},
   'crossover': {img:'Cable_Crossover', musc:['Peitoral','Ombro anterior'],
     steps:['Polias na posição alta, um passo à frente, tronco levemente inclinado.','Braços abertos com cotovelos levemente flexionados e fixos.','Traga as mãos para frente e para baixo em arco até se encontrarem na frente do quadril.','Aperte o peito 1 s e volte devagar até sentir alongar.'],
     tips:['O ângulo do cotovelo não muda: é um “abraço”, não um empurrão.','Ombros para trás e para baixo durante todo o movimento.']},
-  'rosca scott': {img:'Preacher_Curl', musc:['Bíceps','Braquial'],
-    steps:['Sente e apoie a parte de trás dos braços no banco Scott, axilas encaixadas no topo.','Segure a barra com as palmas para cima e os braços quase estendidos.','Flexione os cotovelos trazendo a barra em direção aos ombros.','Desça devagar até quase estender os braços.'],
-    tips:['Não estenda totalmente com peso pesado embaixo (protege o cotovelo).','Braços sempre apoiados: sem levantar os cotovelos.']},
+  'rosca scott': {img:'Preacher_Curl', photo:'Fotos Exercicio/06_rosca_scott.jpg', presc:'2 × 8–12', musc:['Bíceps braquial','Braquial (auxiliar)'],
+    steps:['Mantenha os braços apoiados no banco.','Faça a flexão do cotovelo de forma controlada.','Sinta o bíceps encurtando no topo.','Desça lentamente, sem soltar o peso.'],
+    errors:['Tirar os cotovelos do apoio.','Usar impulso do tronco.','Não controlar a descida.','Carga muito alta.','Movimentar os ombros.']},
   'rosca inclinada': {img:'Incline_Dumbbell_Curl', musc:['Bíceps (cabeça longa)'],
     steps:['Banco a ~45–60°, costas apoiadas e braços pendurados com halteres, palmas para frente.','Mantenha os cotovelos parados apontando para o chão.','Flexione os cotovelos subindo os halteres sem mover os ombros.','Desça devagar até estender os braços.'],
     tips:['Os ombros não vão para frente: o alongamento é o diferencial do exercício.','Carga menor que na rosca em pé é normal.']},
-  'triceps pulley': {img:'Triceps_Pushdown', musc:['Tríceps'],
-    steps:['De frente para a polia alta, segure a barra ou corda com os cotovelos colados ao corpo.','Tronco levemente inclinado à frente, abdômen firme.','Estenda os cotovelos empurrando para baixo até os braços ficarem retos.','Volte devagar até ~90°, sem tirar os cotovelos do lugar.'],
-    tips:['Só o antebraço se move; ombros e cotovelos ficam fixos.','Com corda, afaste as pontas no final para contrair mais.']},
+  'triceps pulley': {img:'Triceps_Pushdown', photo:'Fotos Exercicio/07_triceps_polia_corda.jpg', presc:'2 × 10–15', musc:['Tríceps braquial'],
+    steps:['De frente para a polia alta, segure a corda com os cotovelos colados ao corpo.','Tronco levemente inclinado à frente, abdômen firme.','Estenda os cotovelos empurrando para baixo até os braços ficarem retos.','No final, afaste as pontas da corda para contrair mais.','Volte devagar até ~90°, sem tirar os cotovelos do lugar.'],
+    errors:['Mexer os ombros ou abrir os cotovelos.','Jogar o tronco por cima da corda para empurrar.','Subir rápido demais, sem controlar a volta.']},
   'triceps frances unilateral': {img:'Standing_One-Arm_Dumbbell_Triceps_Extension', musc:['Tríceps (cabeça longa)'],
     steps:['Sentado ou em pé, segure um halter com o braço estendido acima da cabeça.','Cotovelo apontando para cima e próximo da cabeça.','Desça o halter atrás da cabeça flexionando apenas o cotovelo.','Estenda o braço de volta até o topo e troque de lado ao final.'],
     tips:['Use a outra mão para segurar o cotovelo no lugar.','Desça até sentir alongar bem o tríceps, sem dor no cotovelo.']},
@@ -2441,10 +2448,28 @@ const EXERCISE_GUIDE = {
   'prancha': {img:'Plank', musc:['Core','Ombros'],
     steps:['Apoie antebraços e pontas dos pés, cotovelos abaixo dos ombros.','Corpo reto da cabeça aos calcanhares.','Contraia abdômen e glúteos e segure o tempo definido.'],
     tips:['Quadril nem alto nem caído.','Respire normalmente durante a prancha.']},
+  'remada baixa na polia': {img:'Seated_Cable_Rows', photo:'Fotos Exercicio/03_remada_baixa_neutra.jpg', presc:'3 × 8–12', musc:['Dorsais','Romboides','Trapézio médio'],
+    steps:['Mantenha o tronco estável, sem balançar.','Puxe os cotovelos para trás, próximos ao corpo.','Sinta a contração entre as escápulas.','Mantenha o peito aberto e ombros para baixo.','Controle a volta, sem deixar os ombros irem para frente.'],
+    errors:['Jogar o tronco para trás.','Usar muito impulso.','Elevar os ombros.','Não alongar na fase inicial.','Puxar apenas com os braços.']},
+  'elevacao lateral na polia': {img:'Side_Lateral_Raise', photo:'Fotos Exercicio/05_elevacao_lateral_polia.jpg', presc:'3 × 12–20', musc:['Deltoide lateral','Trapézio (auxiliar)'],
+    steps:['Mantenha o tronco estável.','Conduza o movimento pelo cotovelo.','Suba até a altura dos ombros (ou um pouco abaixo).','Mantenha o punho alinhado, sem girar.','Use carga moderada e foco na contração.'],
+    errors:['Encolher os ombros.','Usar impulso do corpo.','Subir acima da linha do ombro.','Rotacionar o tronco.','Carga muito alta, perdendo a técnica.']},
 };
 
 // Nomes diferentes que apontam para o mesmo guia
 const EXERCISE_GUIDE_ALIAS = {
+  // Fichas da pasta "Fotos Exercicio"
+  'remada maquina':'remada baixa na polia',
+  'remada baixa':'remada baixa na polia',
+  'remada baixa neutra':'remada baixa na polia',
+  'remada baixa na polia pegada neutra':'remada baixa na polia',
+  'elevacao lateral':'elevacao lateral na polia',
+  'elevacao lateral polia':'elevacao lateral na polia',
+  'supino inclinado com halteres':'supino inclinado halter',
+  'puxada alta pronada':'puxada alta na polia',
+  'chest press convergente':'chest press',
+  'triceps na polia com corda':'triceps pulley',
+  'triceps polia corda':'triceps pulley',
   'barra fixa':'barra fixa pronada',
   'supino inclinado':'supino inclinado halter',
   'agachamento':'agachamento livre',
@@ -2461,7 +2486,7 @@ function normEx(n){ return String(n||'').normalize('NFD').replace(/[̀-ͯ]/g,'')
 function exMediaKey(name){ return 'exMedia_'+normEx(name).replace(/ /g,'_'); }
 function getExerciseGuide(name){
   const k=normEx(name);
-  return EXERCISE_GUIDE[k] || EXERCISE_GUIDE[EXERCISE_GUIDE_ALIAS[k]] || null;
+  return EXERCISE_GUIDE[EXERCISE_GUIDE_ALIAS[k]] || EXERCISE_GUIDE[k] || null;
 }
 
 let howtoName=null, howtoTimer=null;
@@ -2483,10 +2508,13 @@ function closeHowTo(e){
 function renderHowTo(){
   const g=getExerciseGuide(howtoName);
   const media=ld(exMediaKey(howtoName),{});
-  const imgs=media.photo ? [media.photo] : g ? [GUIDE_IMG_BASE+g.img+'/0.jpg', GUIDE_IMG_BASE+g.img+'/1.jpg'] : [];
+  const sheetPhoto=!media.photo && g?.photo ? encodeURI(g.photo) : '';
+  const imgs=media.photo ? [media.photo] : sheetPhoto ? [sheetPhoto] : g ? [GUIDE_IMG_BASE+g.img+'/0.jpg', GUIDE_IMG_BASE+g.img+'/1.jpg'] : [];
   document.getElementById('ht-title').textContent=howtoName;
 
-  const mediaHtml=imgs.length
+  const mediaHtml=sheetPhoto
+    ? `<a class="ht-sheet-photo" href="${sheetPhoto}" target="_blank" rel="noopener"><img src="${sheetPhoto}" alt="Ficha do exercício" onerror="this.parentElement.classList.add('ht-failed')"><span class="ht-zoom">Toque para ampliar</span><div class="ht-fallback">Foto indisponível sem internet</div></a>`
+    : imgs.length
     ? `<div class="ht-media">${imgs.map((src,i)=>`<img class="ht-img${i===0?' on':''}" src="${src}" alt="" onerror="this.closest('.ht-media').classList.add('ht-failed')">`).join('')}
         ${imgs.length>1?'<span class="ht-badge" id="ht-badge">Início</span>':''}
         <div class="ht-fallback">Imagem indisponível sem internet</div></div>`
@@ -2494,10 +2522,12 @@ function renderHowTo(){
 
   const videoUrl=media.video || `https://www.youtube.com/results?search_query=${encodeURIComponent(howtoName+' execução correta')}`;
   const body=g ? `
+      ${g.presc?`<div class="ht-presc"><span>Séries recomendadas</span><b>${g.presc}</b></div>`:''}
       ${g.musc?.length?`<div class="ht-tags">${g.musc.map(m=>`<span>${m}</span>`).join('')}</div>`:''}
-      <div class="ht-sec">Passo a passo</div>
+      <div class="ht-sec">${g.errors?'Dicas de execução':'Passo a passo'}</div>
       <ol class="ht-steps">${g.steps.map(t=>`<li>${t}</li>`).join('')}</ol>
-      ${g.tips?.length?`<div class="ht-sec">Dicas e erros comuns</div><ul class="ht-tips">${g.tips.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}`
+      ${g.tips?.length?`<div class="ht-sec">Dicas e erros comuns</div><ul class="ht-tips">${g.tips.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}
+      ${g.errors?.length?`<div class="ht-sec">Erros comuns</div><ul class="ht-tips ht-errors">${g.errors.map(t=>`<li>${t}</li>`).join('')}</ul>`:''}`
     : `<div class="ht-none">Ainda não há instruções escritas para este exercício. Use o vídeo abaixo ou adicione uma foto sua.</div>`;
 
   document.getElementById('ht-body').innerHTML=`
@@ -2510,7 +2540,7 @@ function renderHowTo(){
       <button class="sh-btn" onclick="setHowToVideo()">${media.video?'Trocar meu vídeo':'Usar meu vídeo'}</button>
     </div>
     ${media.photo||media.video?`<div class="ht-own-rm">${media.photo?'<button onclick="removeHowToMedia(\'photo\')">Remover minha foto</button>':''}${media.video?'<button onclick="removeHowToMedia(\'video\')">Remover meu vídeo</button>':''}</div>`:''}
-    ${!media.photo&&g?'<div class="ht-credit">Imagens: Free Exercise DB (domínio público)</div>':''}`;
+    ${!media.photo&&!sheetPhoto&&g?'<div class="ht-credit">Imagens: Free Exercise DB (domínio público)</div>':''}`;
 
   // Alterna início/fim do movimento como um GIF simples
   clearInterval(howtoTimer); howtoTimer=null;
@@ -2569,6 +2599,21 @@ const ICON = {
   minus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>',
   clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M10 2h4"/></svg>'
 };
+
+// Uma vez só: aplica as séries das fichas da pasta "Fotos Exercicio" nos treinos padrão já editados no celular.
+function migrateFichaPrescriptions(){
+  if(ld('fichaPrescMigrated_v1',false)) return;
+  let changed=false;
+  Object.values(treinoTemplates||{}).forEach(list=>(list||[]).forEach(ex=>{
+    const presc=getExerciseGuide(ex.name)?.presc;
+    if(!presc) return;
+    ex.meta=presc;
+    ex.defaultSeries=parseInt(presc,10)||ex.defaultSeries;
+    changed=true;
+  }));
+  if(changed){ sv('treinoTemplates',treinoTemplates); applyTreinoTemplates(); }
+  sv('fichaPrescMigrated_v1',true);
+}
 
 function getExByKey(k){ return getCurrentExercises().find(e=>e.id===k); }
 
@@ -4507,6 +4552,7 @@ window.refreshAppFromStorage = function(){
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
+migrateFichaPrescriptions();
 normalizeExerciseLibrary();
 initHeader();
 renderSelector();
